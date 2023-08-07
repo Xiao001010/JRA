@@ -49,7 +49,6 @@ def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, wr
     
 def train(model, optimizer, criterion, train_loader, device, writer, logger, epochs, save_interval=10, save_path=None, mean=None, std=None):
     model.train()
-    vis_idx = random.randint(0, len(train_loader.dataset))
     for epoch in range(1, epochs + 1):
         data, x_hat, train_loss = train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger)
         if epoch % save_interval == 0:
@@ -59,9 +58,15 @@ def train(model, optimizer, criterion, train_loader, device, writer, logger, epo
                 logger.info('Model saved at {}'.format(ckt_path))
                 data = data.cpu().detach().numpy()
                 x_hat = x_hat.cpu().detach().numpy()
+                
+                vis_idx = random.randint(0, len(data))
                 if mean:
+                    # print('=================1', data.shape)
                     data = (data.transpose(0, 2, 3, 1) * std + mean).transpose(0, 3, 1, 2)
                     x_hat = (x_hat.transpose(0, 2, 3, 1) * std + mean).transpose(0, 3, 1, 2)
+                # print('=================2', data.shape)
+                # print('=================3', len(train_loader.dataset), len(train_loader), len(data), len(x_hat))
+                # print('=================4', vis_idx, data[vis_idx].shape, x_hat[vis_idx].shape)
                 writer.add_image('original1', data[vis_idx][0].unsqueeze(0), epoch+1)
                 writer.add_image('original2', data[vis_idx][1].unsqueeze(0), epoch+1)
                 writer.add_image('original3', data[vis_idx][2].unsqueeze(0), epoch+1)
