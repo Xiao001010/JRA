@@ -6,6 +6,7 @@ import argparse
 import yaml
 
 import tifffile
+import numpy as np
 import torch
 import torch.optim as optim
 
@@ -67,14 +68,14 @@ def train(model, optimizer, criterion, train_loader, device, writer, logger, epo
                 # print('=================2', data.shape)
                 # print('=================3', len(train_loader.dataset), len(train_loader), len(data), len(x_hat))
                 # print('=================4', vis_idx, data[vis_idx].shape, x_hat[vis_idx].shape)
-                writer.add_image('original1', data[vis_idx][0].unsqueeze(0), epoch+1)
-                writer.add_image('original2', data[vis_idx][1].unsqueeze(0), epoch+1)
-                writer.add_image('original3', data[vis_idx][2].unsqueeze(0), epoch+1)
-                writer.add_image('original4', data[vis_idx][3].unsqueeze(0), epoch+1)
-                writer.add_image('reconstruction1', x_hat[vis_idx][0].unsqueeze(0), epoch+1)
-                writer.add_image('reconstruction2', x_hat[vis_idx][1].unsqueeze(0), epoch+1)
-                writer.add_image('reconstruction3', x_hat[vis_idx][2].unsqueeze(0), epoch+1)
-                writer.add_image('reconstruction4', x_hat[vis_idx][3].unsqueeze(0), epoch+1)
+                writer.add_image('original1', data[vis_idx][0][np.newaxis, :, :], epoch+1)
+                writer.add_image('original2', data[vis_idx][1][np.newaxis, :, :], epoch+1)
+                writer.add_image('original3', data[vis_idx][2][np.newaxis, :, :], epoch+1)
+                writer.add_image('original4', data[vis_idx][3][np.newaxis, :, :], epoch+1)
+                writer.add_image('reconstruction1', x_hat[vis_idx][0][np.newaxis, :, :], epoch+1)
+                writer.add_image('reconstruction2', x_hat[vis_idx][1][np.newaxis, :, :], epoch+1)
+                writer.add_image('reconstruction3', x_hat[vis_idx][2][np.newaxis, :, :], epoch+1)
+                writer.add_image('reconstruction4', x_hat[vis_idx][3][np.newaxis, :, :], epoch+1)
                 vis_path = os.path.dirname(logger.handlers[-1].baseFilename)
                 tifffile.imwrite(os.path.join(vis_path, 'original_{}.tif'.format(epoch)), data[vis_idx])
                 tifffile.imwrite(os.path.join(vis_path, 'reconstruction_{}.tif'.format(epoch)), x_hat[vis_idx])
