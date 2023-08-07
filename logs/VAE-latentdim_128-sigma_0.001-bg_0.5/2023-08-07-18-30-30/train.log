@@ -263,3 +263,81 @@
 [Mon Aug 07 18:30:30 2023|main.py|INFO] Building criterion ...
 [Mon Aug 07 18:30:30 2023|main.py|INFO] Start training ...
 [Mon Aug 07 18:30:30 2023|train.py|INFO] Train Epoch: 1
+[Mon Aug 07 18:30:42 2023|train.py|INFO] Train Epoch: 1 [0/75568 (0%)]	Loss: 5207818240.000000	KL Loss: 17.620802	Recon Loss: 5207818240.000000	lr: 0.001000
+[Mon Aug 07 18:30:46 2023|train.py|INFO] Train Epoch: 1 [15104/75568 (20%)]	Loss: 1580446080.000000	KL Loss: 101.274597	Recon Loss: 1580445952.000000	lr: 0.001000
+[Mon Aug 07 18:30:50 2023|train.py|INFO] Train Epoch: 1 [30208/75568 (40%)]	Loss: 1866166656.000000	KL Loss: 148.442368	Recon Loss: 1866166528.000000	lr: 0.001000
+[Mon Aug 07 18:30:54 2023|train.py|INFO] Train Epoch: 1 [45312/75568 (60%)]	Loss: 938544832.000000	KL Loss: 173.096100	Recon Loss: 938544640.000000	lr: 0.001000
+[Mon Aug 07 18:30:58 2023|train.py|INFO] Train Epoch: 1 [60416/75568 (80%)]	Loss: 1137833088.000000	KL Loss: 221.390778	Recon Loss: 1137832832.000000	lr: 0.001000
+[Mon Aug 07 18:31:03 2023|train.py|INFO] ====> Epoch: 1 Average loss: 1364134153.0034
+[Mon Aug 07 18:31:03 2023|train.py|INFO] Train Epoch: 2
+[Mon Aug 07 18:31:10 2023|train.py|INFO] Train Epoch: 2 [0/75568 (0%)]	Loss: 970809472.000000	KL Loss: 251.164703	Recon Loss: 970809216.000000	lr: 0.000950
+[Mon Aug 07 18:31:14 2023|train.py|INFO] Train Epoch: 2 [15104/75568 (20%)]	Loss: 1362959360.000000	KL Loss: 268.218964	Recon Loss: 1362959104.000000	lr: 0.000950
+[Mon Aug 07 18:31:18 2023|train.py|INFO] Train Epoch: 2 [30208/75568 (40%)]	Loss: 739275712.000000	KL Loss: 299.994446	Recon Loss: 739275392.000000	lr: 0.000950
+[Mon Aug 07 18:31:22 2023|train.py|INFO] Train Epoch: 2 [45312/75568 (60%)]	Loss: 768865344.000000	KL Loss: 312.580475	Recon Loss: 768865024.000000	lr: 0.000950
+[Mon Aug 07 18:31:26 2023|train.py|INFO] Train Epoch: 2 [60416/75568 (80%)]	Loss: 693793344.000000	KL Loss: 335.507935	Recon Loss: 693793024.000000	lr: 0.000950
+[Mon Aug 07 18:31:30 2023|train.py|INFO] ====> Epoch: 2 Average loss: 758177273.7627
+[Mon Aug 07 18:31:30 2023|train.py|INFO] Train Epoch: 3
+[Mon Aug 07 18:31:37 2023|train.py|INFO] Train Epoch: 3 [0/75568 (0%)]	Loss: 569339200.000000	KL Loss: 347.141968	Recon Loss: 569338880.000000	lr: 0.000902
+[Mon Aug 07 18:31:41 2023|train.py|INFO] Train Epoch: 3 [15104/75568 (20%)]	Loss: 527882784.000000	KL Loss: 356.209900	Recon Loss: 527882432.000000	lr: 0.000902
+[Mon Aug 07 18:31:45 2023|train.py|INFO] Train Epoch: 3 [30208/75568 (40%)]	Loss: 614370176.000000	KL Loss: 358.184509	Recon Loss: 614369792.000000	lr: 0.000902
+[Mon Aug 07 18:31:49 2023|train.py|INFO] Train Epoch: 3 [45312/75568 (60%)]	Loss: 668668736.000000	KL Loss: 366.050049	Recon Loss: 668668352.000000	lr: 0.000902
+[Mon Aug 07 18:31:53 2023|train.py|INFO] Train Epoch: 3 [60416/75568 (80%)]	Loss: 610295040.000000	KL Loss: 376.439514	Recon Loss: 610294656.000000	lr: 0.000902
+[Mon Aug 07 18:31:57 2023|train.py|INFO] ====> Epoch: 3 Average loss: 691235739.3898
+[Mon Aug 07 18:31:57 2023|train.py|INFO] Train Epoch: 4
+[Mon Aug 07 18:32:05 2023|train.py|INFO] Train Epoch: 4 [0/75568 (0%)]	Loss: 717448448.000000	KL Loss: 382.103729	Recon Loss: 717448064.000000	lr: 0.000857
+[Mon Aug 07 18:32:08 2023|train.py|INFO] Train Epoch: 4 [15104/75568 (20%)]	Loss: 794989376.000000	KL Loss: 388.964722	Recon Loss: 794988992.000000	lr: 0.000857
+[Mon Aug 07 18:32:12 2023|train.py|INFO] Train Epoch: 4 [30208/75568 (40%)]	Loss: 631356224.000000	KL Loss: 394.235168	Recon Loss: 631355840.000000	lr: 0.000857
+[Mon Aug 07 18:32:16 2023|train.py|INFO] Train Epoch: 4 [45312/75568 (60%)]	Loss: 808376192.000000	KL Loss: 398.174194	Recon Loss: 808375808.000000	lr: 0.000857
+[Mon Aug 07 18:32:20 2023|train.py|INFO] Train Epoch: 4 [60416/75568 (80%)]	Loss: 606029248.000000	KL Loss: 408.427795	Recon Loss: 606028864.000000	lr: 0.000857
+[Mon Aug 07 18:32:24 2023|train.py|INFO] ====> Epoch: 4 Average loss: 647687471.6746
+[Mon Aug 07 18:32:24 2023|train.py|INFO] Train Epoch: 5
+[Mon Aug 07 18:32:32 2023|train.py|INFO] Train Epoch: 5 [0/75568 (0%)]	Loss: 628607232.000000	KL Loss: 415.809814	Recon Loss: 628606848.000000	lr: 0.000815
+[Mon Aug 07 18:32:36 2023|train.py|INFO] Train Epoch: 5 [15104/75568 (20%)]	Loss: 628498432.000000	KL Loss: 410.820709	Recon Loss: 628498048.000000	lr: 0.000815
+[Mon Aug 07 18:32:40 2023|train.py|INFO] Train Epoch: 5 [30208/75568 (40%)]	Loss: 731749120.000000	KL Loss: 418.865509	Recon Loss: 731748672.000000	lr: 0.000815
+[Mon Aug 07 18:32:44 2023|train.py|INFO] Train Epoch: 5 [45312/75568 (60%)]	Loss: 612444096.000000	KL Loss: 424.301056	Recon Loss: 612443648.000000	lr: 0.000815
+[Mon Aug 07 18:32:48 2023|train.py|INFO] Train Epoch: 5 [60416/75568 (80%)]	Loss: 646873536.000000	KL Loss: 423.680664	Recon Loss: 646873088.000000	lr: 0.000815
+[Mon Aug 07 18:32:52 2023|train.py|INFO] ====> Epoch: 5 Average loss: 642373085.8847
+[Mon Aug 07 18:32:52 2023|train.py|INFO] Train Epoch: 6
+[Mon Aug 07 18:32:59 2023|train.py|INFO] Train Epoch: 6 [0/75568 (0%)]	Loss: 619128256.000000	KL Loss: 436.746826	Recon Loss: 619127808.000000	lr: 0.000774
+[Mon Aug 07 18:33:03 2023|train.py|INFO] Train Epoch: 6 [15104/75568 (20%)]	Loss: 810238784.000000	KL Loss: 440.211243	Recon Loss: 810238336.000000	lr: 0.000774
+[Mon Aug 07 18:33:07 2023|train.py|INFO] Train Epoch: 6 [30208/75568 (40%)]	Loss: 533587328.000000	KL Loss: 449.354797	Recon Loss: 533586880.000000	lr: 0.000774
+[Mon Aug 07 18:33:11 2023|train.py|INFO] Train Epoch: 6 [45312/75568 (60%)]	Loss: 625649216.000000	KL Loss: 450.919952	Recon Loss: 625648768.000000	lr: 0.000774
+[Mon Aug 07 18:33:15 2023|train.py|INFO] Train Epoch: 6 [60416/75568 (80%)]	Loss: 654439360.000000	KL Loss: 457.028748	Recon Loss: 654438912.000000	lr: 0.000774
+[Mon Aug 07 18:33:19 2023|train.py|INFO] ====> Epoch: 6 Average loss: 632040448.4881
+[Mon Aug 07 18:33:19 2023|train.py|INFO] Train Epoch: 7
+[Mon Aug 07 18:33:27 2023|train.py|INFO] Train Epoch: 7 [0/75568 (0%)]	Loss: 560829632.000000	KL Loss: 454.472198	Recon Loss: 560829184.000000	lr: 0.000735
+[Mon Aug 07 18:33:31 2023|train.py|INFO] Train Epoch: 7 [15104/75568 (20%)]	Loss: 531702080.000000	KL Loss: 464.790161	Recon Loss: 531701600.000000	lr: 0.000735
+[Mon Aug 07 18:33:35 2023|train.py|INFO] Train Epoch: 7 [30208/75568 (40%)]	Loss: 506460032.000000	KL Loss: 452.296997	Recon Loss: 506459584.000000	lr: 0.000735
+[Mon Aug 07 18:33:39 2023|train.py|INFO] Train Epoch: 7 [45312/75568 (60%)]	Loss: 448257664.000000	KL Loss: 458.174500	Recon Loss: 448257216.000000	lr: 0.000735
+[Mon Aug 07 18:33:43 2023|train.py|INFO] Train Epoch: 7 [60416/75568 (80%)]	Loss: 590160192.000000	KL Loss: 472.671448	Recon Loss: 590159744.000000	lr: 0.000735
+[Mon Aug 07 18:33:47 2023|train.py|INFO] ====> Epoch: 7 Average loss: 551037578.1424
+[Mon Aug 07 18:33:47 2023|train.py|INFO] Train Epoch: 8
+[Mon Aug 07 18:33:54 2023|train.py|INFO] Train Epoch: 8 [0/75568 (0%)]	Loss: 462183392.000000	KL Loss: 473.772888	Recon Loss: 462182912.000000	lr: 0.000698
+[Mon Aug 07 18:33:58 2023|train.py|INFO] Train Epoch: 8 [15104/75568 (20%)]	Loss: 546358272.000000	KL Loss: 480.312714	Recon Loss: 546357760.000000	lr: 0.000698
+[Mon Aug 07 18:34:02 2023|train.py|INFO] Train Epoch: 8 [30208/75568 (40%)]	Loss: 544165568.000000	KL Loss: 485.830505	Recon Loss: 544165056.000000	lr: 0.000698
+[Mon Aug 07 18:34:06 2023|train.py|INFO] Train Epoch: 8 [45312/75568 (60%)]	Loss: 455726592.000000	KL Loss: 485.512329	Recon Loss: 455726112.000000	lr: 0.000698
+[Mon Aug 07 18:34:10 2023|train.py|INFO] Train Epoch: 8 [60416/75568 (80%)]	Loss: 408662432.000000	KL Loss: 489.212585	Recon Loss: 408661952.000000	lr: 0.000698
+[Mon Aug 07 18:34:14 2023|train.py|INFO] ====> Epoch: 8 Average loss: 507218187.7695
+[Mon Aug 07 18:34:14 2023|train.py|INFO] Train Epoch: 9
+[Mon Aug 07 18:34:21 2023|train.py|INFO] Train Epoch: 9 [0/75568 (0%)]	Loss: 470483712.000000	KL Loss: 501.457306	Recon Loss: 470483200.000000	lr: 0.000663
+[Mon Aug 07 18:34:25 2023|train.py|INFO] Train Epoch: 9 [15104/75568 (20%)]	Loss: 541725440.000000	KL Loss: 500.805359	Recon Loss: 541724928.000000	lr: 0.000663
+[Mon Aug 07 18:34:29 2023|train.py|INFO] Train Epoch: 9 [30208/75568 (40%)]	Loss: 454209856.000000	KL Loss: 509.279907	Recon Loss: 454209344.000000	lr: 0.000663
+[Mon Aug 07 18:34:33 2023|train.py|INFO] Train Epoch: 9 [45312/75568 (60%)]	Loss: 500889792.000000	KL Loss: 511.200653	Recon Loss: 500889280.000000	lr: 0.000663
+[Mon Aug 07 18:34:37 2023|train.py|INFO] Train Epoch: 9 [60416/75568 (80%)]	Loss: 425564224.000000	KL Loss: 519.387329	Recon Loss: 425563712.000000	lr: 0.000663
+[Mon Aug 07 18:34:41 2023|train.py|INFO] ====> Epoch: 9 Average loss: 500611698.4407
+[Mon Aug 07 18:34:41 2023|train.py|INFO] Train Epoch: 10
+[Mon Aug 07 18:34:48 2023|train.py|INFO] Train Epoch: 10 [0/75568 (0%)]	Loss: 472545344.000000	KL Loss: 518.987915	Recon Loss: 472544832.000000	lr: 0.000630
+[Mon Aug 07 18:34:52 2023|train.py|INFO] Train Epoch: 10 [15104/75568 (20%)]	Loss: 575394432.000000	KL Loss: 532.586304	Recon Loss: 575393920.000000	lr: 0.000630
+[Mon Aug 07 18:34:56 2023|train.py|INFO] Train Epoch: 10 [30208/75568 (40%)]	Loss: 518274304.000000	KL Loss: 535.434937	Recon Loss: 518273760.000000	lr: 0.000630
+[Mon Aug 07 18:35:00 2023|train.py|INFO] Train Epoch: 10 [45312/75568 (60%)]	Loss: 494060704.000000	KL Loss: 539.369751	Recon Loss: 494060160.000000	lr: 0.000630
+[Mon Aug 07 18:35:04 2023|train.py|INFO] Train Epoch: 10 [60416/75568 (80%)]	Loss: 546794816.000000	KL Loss: 535.325195	Recon Loss: 546794304.000000	lr: 0.000630
+[Mon Aug 07 18:35:08 2023|train.py|INFO] ====> Epoch: 10 Average loss: 494108995.5797
+[Mon Aug 07 18:35:08 2023|train.py|INFO] Model saved at checkpoints\VAE-latentdim_128-sigma_0.001-bg_0.5\2023-08-07-18-30-30\VAE-Epoch_10-Loss_494108995.5797.pth
+[Mon Aug 07 18:35:08 2023|train.py|INFO] Train Epoch: 11
+[Mon Aug 07 18:35:16 2023|train.py|INFO] Train Epoch: 11 [0/75568 (0%)]	Loss: 476255136.000000	KL Loss: 546.960205	Recon Loss: 476254592.000000	lr: 0.000599
+[Mon Aug 07 18:35:19 2023|train.py|INFO] Train Epoch: 11 [15104/75568 (20%)]	Loss: 486328032.000000	KL Loss: 554.468140	Recon Loss: 486327488.000000	lr: 0.000599
+[Mon Aug 07 18:35:23 2023|train.py|INFO] Train Epoch: 11 [30208/75568 (40%)]	Loss: 399635104.000000	KL Loss: 555.753113	Recon Loss: 399634560.000000	lr: 0.000599
+[Mon Aug 07 18:35:27 2023|train.py|INFO] Train Epoch: 11 [45312/75568 (60%)]	Loss: 443601248.000000	KL Loss: 558.700073	Recon Loss: 443600704.000000	lr: 0.000599
+[Mon Aug 07 18:35:31 2023|train.py|INFO] Train Epoch: 11 [60416/75568 (80%)]	Loss: 491776960.000000	KL Loss: 561.561523	Recon Loss: 491776384.000000	lr: 0.000599
+[Mon Aug 07 18:35:35 2023|train.py|INFO] ====> Epoch: 11 Average loss: 487746812.9627
+[Mon Aug 07 18:35:35 2023|train.py|INFO] Train Epoch: 12
