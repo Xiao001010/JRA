@@ -34,29 +34,38 @@ def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, wr
         train_recon_loss += recon_loss.item()
         optimizer.step()
         if batch_idx %  (len(train_loader)//5) == 0:
-            writer.add_scalar('train/loss', loss.item(), epoch * len(train_loader) + batch_idx)
-            writer.add_scalar('train/kl_loss', kl_loss.item(), epoch * len(train_loader) + batch_idx)
-            writer.add_scalar('train/recon_loss', recon_loss.item(), epoch * len(train_loader) + batch_idx)
-            logger.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}'.format(
+            writer.add_scalar('iteration/loss', loss.item(), epoch * len(train_loader) + batch_idx)
+            writer.add_scalar('iteration/kl_loss', kl_loss.item(), epoch * len(train_loader) + batch_idx)
+            writer.add_scalar('iteration/recon_loss', recon_loss.item(), epoch * len(train_loader) + batch_idx)
+            logger.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}\tlr: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                       100. * batch_idx / len(train_loader),
-                       loss.item(), kl_loss.item(), recon_loss.item()))
+                100. * batch_idx / len(train_loader), loss.item(), kl_loss.item(), recon_loss.item(), optimizer.param_groups[0]['lr']))
 
     train_loss /= len(train_loader)
     train_kl_loss /= len(train_loader)
     train_recon_loss /= len(train_loader)
     logger.info('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss))
-    return data, x_hat, train_loss
+    return data, x_hat, train_loss, train_kl_loss, train_recon_loss
     
-def train(model, optimizer, criterion, train_loader, device, writer, logger, epochs, save_interval=10, save_path=None, mean=None, std=None):
+def train(model, optimizer, schedular, criterion, train_loader, device, writer, logger, epochs, save_interval=10, save_path=None, mean=None, std=None):
     model.train()
     for epoch in range(1, epochs + 1):
-        data, x_hat, train_loss = train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger)
+        data, x_hat, train_loss, kl_loss, recon_loss = train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger)
+        writer.add_scalar('epoch/lr', optimizer.param_groups[0]['lr'], epoch)
+        writer.add_scalar('epoch/loss', train_loss, epoch+1)
+        writer.add_scalar('epoch/kl_loss', kl_loss, epoch+1)
+        writer.add_scalar('epoch/recon_loss', recon_loss, epoch+1)
+        schedular.step()
         if epoch % save_interval == 0:
             if save_path:
                 ckt_path = os.path.join(save_path, 'VAE-Epoch_{}-Loss_{:.4f}.pth'.format(epoch, train_loss))
-                torch.save(model.state_dict(), ckt_path)
+                checkpoint = {'epoch': epoch,
+                              'model': model.state_dict(),
+                              'optimizer': optimizer.state_dict(),
+                              'schedular': schedular.state_dict()}
+                torch.save(checkpoint, ckt_path)
                 logger.info('Model saved at {}'.format(ckt_path))
+
                 data = data.cpu().detach().numpy()
                 x_hat = x_hat.cpu().detach().numpy()
                 

@@ -129,9 +129,10 @@ if __name__ == '__main__':
 
     # Start training
     logger.info('Start training ...')
-    train(model, optimizer, criterion, train_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
+    train(model, optimizer, scheduler, criterion, train_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
 
     # Test
     logger.info('Start testing ...')
     test(model, criterion, train_loader, device, writer, logger, config['mean'], config['std'])
 
+# python -W ignore main.py --config config/VAE-latentdim_128-sigma_0.001-bg_0.5.yaml
