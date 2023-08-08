@@ -77,8 +77,10 @@ if __name__ == '__main__':
     logger.info('Std: {}'.format(config['std']))
     logger.info('Image size: {}'.format(config['image_size']))
 
+    logger.info('Lr scheduler: {}'.format(config['lr_scheduler']))
     logger.info('Learning rate: {}'.format(config['lr']))
-    logger.info('Learning rate decay: {}'.format(config['lr_decay']))
+    # logger.info('Step size: {}'.format(config['step_size']))
+    # logger.info('Learning rate decay: {}'.format(config['lr_decay']))
 
     logger.info('In channels: {}'.format(config['in_channels']))
     logger.info('Image size: {}'.format(config['image_size']))
@@ -121,7 +123,15 @@ if __name__ == '__main__':
     # Set optimizer
     logger.info('Building optimizer ...')
     optimizer = optim.Adam(model.parameters(), lr=config['lr'])
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config['lr_decay'])
+    if config['lr_scheduler'] == 'StepLR':
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['step_size'], gamma=config['lr_decay'])
+    elif config['lr_scheduler'] == 'CosineAnnealingLR':
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config['t_max'], eta_min=config['lr_min'])
+    else:
+        raise NotImplementedError
+    
+    logger.info('Optimizer: {}'.format(optimizer))
+    logger.info('Scheduler: {}'.format(scheduler))
 
     # Set criterion
     logger.info('Building criterion ...')
