@@ -20,8 +20,10 @@ use_bn: True
 dropout: 0.0
 layer_list: [2, 2, 2, 2]
 
-lr: 0.001
-lr_decay: 0.95
+lr_scheduler: 'StepLR'
+lr: 0.03
+step_size: 25
+lr_decay: 0.8
 
 sigma: 0.001
 bg_var: 0.5
