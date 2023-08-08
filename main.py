@@ -133,6 +133,6 @@ if __name__ == '__main__':
 
     # Test
     logger.info('Start testing ...')
-    test(model, criterion, train_loader, device, writer, logger, config['mean'], config['std'])
+    test(model, train_loader, device, logger, config['mean'], config['std'])
 
 # python -W ignore main.py --config config/VAE-latentdim_128-sigma_0.001-bg_0.5.yaml
