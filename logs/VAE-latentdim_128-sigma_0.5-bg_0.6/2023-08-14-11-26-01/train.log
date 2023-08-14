@@ -1,0 +1,348 @@
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Task: VAE-latentdim_128-sigma_0.5-bg_0.6
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Device: cuda
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Config path: config/VAE-latentdim_128-sigma_0.5-bg_0.6.yaml
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Log path: logs\VAE-latentdim_128-sigma_0.5-bg_0.6\2023-08-14-11-26-01\train.log
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Checkpoint path: checkpoints\VAE-latentdim_128-sigma_0.5-bg_0.6\2023-08-14-11-26-01
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Random seed: 42
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Batch size: 128
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Data path: data/single_cell_data_with_mask
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Number of workers: 4
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Shuffle: True
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Mean: [6076.686, 1350.9691, 5090.1455, 5019.978]
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Std: [5504.3955, 1145.6356, 663.3312, 706.004]
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Image size: 32
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Lr scheduler: StepLR
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Learning rate: 0.03
+[Mon Aug 14 11:26:01 2023|main.py|INFO] In channels: 4
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Image size: 32
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Latent dim: 128
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Use batch norm: True
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Dropout rate: 0.0
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Layer list: [2, 2, 2, 2]
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Sigma: 0.5
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Background variance: 0.6
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Epochs: 500
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Checkpoint save interval (epochs): 10
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Train transform: Compose(
+    ToTensor()
+    Normalize(mean=[6076.686, 1350.9691, 5090.1455, 5019.978], std=[5504.3955, 1145.6356, 663.3312, 706.004])
+    Resize(size=(32, 32), interpolation=bilinear, max_size=None, antialias=warn)
+)
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Train mask transform: Compose(
+    ToTensor()
+    Resize(size=(32, 32), interpolation=bilinear, max_size=None, antialias=warn)
+)
+[Mon Aug 14 11:26:01 2023|main.py|INFO] Loading dataset from data/single_cell_data_with_mask ...
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Building model ...
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Model: ResVAE(
+  (encoder): Encoder(
+    (conv_1): Conv2d(4, 8, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+    (norm_layer_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+    (layer_1): Sequential(
+      (0): EncoderBottleneckBlock(
+        (conv_1): Conv2d(8, 8, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(8, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(8, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(8, 32, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), bias=False)
+          (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): EncoderBottleneckBlock(
+        (conv_1): Conv2d(32, 8, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(8, 8, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(8, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+      )
+    )
+    (layer_2): Sequential(
+      (0): EncoderBottleneckBlock(
+        (conv_1): Conv2d(32, 8, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(8, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(8, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(32, 32, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), bias=False)
+          (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): EncoderBottleneckBlock(
+        (conv_1): Conv2d(32, 8, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(8, 8, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(8, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+      )
+    )
+    (layer_3): Sequential(
+      (0): EncoderBottleneckBlock(
+        (conv_1): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(16, 16, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(16, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(32, 64, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), bias=False)
+          (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): EncoderBottleneckBlock(
+        (conv_1): Conv2d(64, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(16, 16, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(16, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+      )
+    )
+    (layer_4): Sequential(
+      (0): EncoderBottleneckBlock(
+        (conv_1): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(32, 32, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(64, 128, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), bias=False)
+          (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): EncoderBottleneckBlock(
+        (conv_1): Conv2d(128, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): Conv2d(32, 32, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), bias=False)
+        (norm_2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (norm_3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01, inplace=True)
+      )
+    )
+    (conv_1x1): Sequential(
+      (0): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): LeakyReLU(negative_slope=0.01, inplace=True)
+    )
+    (fc_mu): Linear(in_features=64, out_features=128, bias=True)
+    (fc_var): Linear(in_features=64, out_features=128, bias=True)
+  )
+  (decoder): Decoder(
+    (dense_1): Linear(in_features=128, out_features=64, bias=True)
+    (layer_1): Sequential(
+      (0): DecoderBottleneckBlock(
+        (upsample): Sequential(
+          (0): ConvTranspose2d(16, 128, kernel_size=(1, 1), stride=(1, 1))
+          (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (conv_1): ConvTranspose2d(16, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(32, 32, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (norm_2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+      (1): DecoderBottleneckBlock(
+        (conv_1): ConvTranspose2d(128, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(32, 32, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (norm_2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+    )
+    (layer_2): Sequential(
+      (0): DecoderBottleneckBlock(
+        (upsample): Sequential(
+          (0): ConvTranspose2d(128, 128, kernel_size=(1, 1), stride=(2, 2), output_padding=(1, 1))
+          (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (conv_1): ConvTranspose2d(128, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(32, 32, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), output_padding=(1, 1))
+        (norm_2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+      (1): DecoderBottleneckBlock(
+        (conv_1): ConvTranspose2d(128, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(32, 32, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (norm_2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+    )
+    (layer_3): Sequential(
+      (0): DecoderBottleneckBlock(
+        (upsample): Sequential(
+          (0): ConvTranspose2d(128, 64, kernel_size=(1, 1), stride=(2, 2), output_padding=(1, 1))
+          (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (conv_1): ConvTranspose2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(16, 16, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), output_padding=(1, 1))
+        (norm_2): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(16, 64, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+      (1): DecoderBottleneckBlock(
+        (conv_1): ConvTranspose2d(64, 16, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(16, 16, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (norm_2): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(16, 64, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+    )
+    (layer_4): Sequential(
+      (0): DecoderBottleneckBlock(
+        (upsample): Sequential(
+          (0): ConvTranspose2d(64, 32, kernel_size=(1, 1), stride=(2, 2), output_padding=(1, 1))
+          (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (conv_1): ConvTranspose2d(64, 8, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(8, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), output_padding=(1, 1))
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(8, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+      (1): DecoderBottleneckBlock(
+        (conv_1): ConvTranspose2d(32, 8, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(8, 8, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(8, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+    )
+    (layer_5): Sequential(
+      (0): DecoderBottleneckBlock(
+        (upsample): Sequential(
+          (0): ConvTranspose2d(32, 32, kernel_size=(1, 1), stride=(2, 2), output_padding=(1, 1))
+          (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (conv_1): ConvTranspose2d(32, 8, kernel_size=(1, 1), stride=(1, 1))
+        (norm_1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_2): ConvTranspose2d(8, 8, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2), output_padding=(1, 1))
+        (norm_2): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_3): ConvTranspose2d(8, 32, kernel_size=(1, 1), stride=(1, 1))
+        (norm_3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): LeakyReLU(negative_slope=0.01)
+      )
+    )
+    (upconv_1): Conv2d(32, 4, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+)
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Building optimizer ...
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    initial_lr: 0.03
+    lr: 0.03
+    maximize: False
+    weight_decay: 0
+)
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Scheduler: <torch.optim.lr_scheduler.StepLR object at 0x0000020904C2F070>
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Building criterion ...
+[Mon Aug 14 11:26:02 2023|main.py|INFO] Start training ...
+[Mon Aug 14 11:26:02 2023|train.py|INFO] Train Epoch: 1
+[Mon Aug 14 11:26:13 2023|train.py|INFO] Train Epoch: 1 [0/75568 (0%)]	Loss: 11219070.000000	KL Loss: 17.620802	Recon Loss: 11219052.000000	lr: 0.030000
+[Mon Aug 14 11:26:17 2023|train.py|INFO] Train Epoch: 1 [15104/75568 (20%)]	Loss: 3907931.000000	KL Loss: 888.811584	Recon Loss: 3907042.250000	lr: 0.030000
+[Mon Aug 14 11:26:22 2023|train.py|INFO] Train Epoch: 1 [30208/75568 (40%)]	Loss: 3953988.000000	KL Loss: 1467.653564	Recon Loss: 3952520.250000	lr: 0.030000
+[Mon Aug 14 11:26:26 2023|train.py|INFO] Train Epoch: 1 [45312/75568 (60%)]	Loss: 3617782.750000	KL Loss: 1806.866577	Recon Loss: 3615976.000000	lr: 0.030000
+[Mon Aug 14 11:26:30 2023|train.py|INFO] Train Epoch: 1 [60416/75568 (80%)]	Loss: 3573208.500000	KL Loss: 2036.389160	Recon Loss: 3571172.000000	lr: 0.030000
+[Mon Aug 14 11:26:35 2023|train.py|INFO] ====> Epoch: 1 Average loss: 4453447.3790
+[Mon Aug 14 11:26:35 2023|train.py|INFO] Train Epoch: 2
+[Mon Aug 14 11:26:43 2023|train.py|INFO] Train Epoch: 2 [0/75568 (0%)]	Loss: 3717869.750000	KL Loss: 2056.690430	Recon Loss: 3715813.000000	lr: 0.030000
+[Mon Aug 14 11:26:47 2023|train.py|INFO] Train Epoch: 2 [15104/75568 (20%)]	Loss: 3966347.750000	KL Loss: 2033.334473	Recon Loss: 3964314.500000	lr: 0.030000
+[Mon Aug 14 11:26:52 2023|train.py|INFO] Train Epoch: 2 [30208/75568 (40%)]	Loss: 2722302.250000	KL Loss: 1983.723267	Recon Loss: 2720318.500000	lr: 0.030000
+[Mon Aug 14 11:26:56 2023|train.py|INFO] Train Epoch: 2 [45312/75568 (60%)]	Loss: 2452760.250000	KL Loss: 2005.176758	Recon Loss: 2450755.000000	lr: 0.030000
+[Mon Aug 14 11:27:00 2023|train.py|INFO] Train Epoch: 2 [60416/75568 (80%)]	Loss: 2745801.250000	KL Loss: 1818.334106	Recon Loss: 2743983.000000	lr: 0.030000
+[Mon Aug 14 11:27:05 2023|train.py|INFO] ====> Epoch: 2 Average loss: 2822088.6960
+[Mon Aug 14 11:27:05 2023|train.py|INFO] Train Epoch: 3
+[Mon Aug 14 11:27:13 2023|train.py|INFO] Train Epoch: 3 [0/75568 (0%)]	Loss: 2355868.750000	KL Loss: 1877.042480	Recon Loss: 2353991.750000	lr: 0.030000
+[Mon Aug 14 11:27:17 2023|train.py|INFO] Train Epoch: 3 [15104/75568 (20%)]	Loss: 2358406.750000	KL Loss: 1854.020508	Recon Loss: 2356552.750000	lr: 0.030000
+[Mon Aug 14 11:27:22 2023|train.py|INFO] Train Epoch: 3 [30208/75568 (40%)]	Loss: 2429846.750000	KL Loss: 1723.163574	Recon Loss: 2428123.500000	lr: 0.030000
+[Mon Aug 14 11:27:28 2023|train.py|INFO] Train Epoch: 3 [45312/75568 (60%)]	Loss: 2985848.000000	KL Loss: 1745.366699	Recon Loss: 2984102.750000	lr: 0.030000
+[Mon Aug 14 11:27:33 2023|train.py|INFO] Train Epoch: 3 [60416/75568 (80%)]	Loss: 2667021.000000	KL Loss: 1758.647461	Recon Loss: 2665262.250000	lr: 0.030000
+[Mon Aug 14 11:27:38 2023|train.py|INFO] ====> Epoch: 3 Average loss: 2721259.7794
+[Mon Aug 14 11:27:38 2023|train.py|INFO] Train Epoch: 4
+[Mon Aug 14 11:27:46 2023|train.py|INFO] Train Epoch: 4 [0/75568 (0%)]	Loss: 2769633.250000	KL Loss: 1922.156738	Recon Loss: 2767711.000000	lr: 0.030000
+[Mon Aug 14 11:27:51 2023|train.py|INFO] Train Epoch: 4 [15104/75568 (20%)]	Loss: 3058660.000000	KL Loss: 1768.920532	Recon Loss: 3056891.000000	lr: 0.030000
+[Mon Aug 14 11:27:56 2023|train.py|INFO] Train Epoch: 4 [30208/75568 (40%)]	Loss: 2944452.000000	KL Loss: 1832.796631	Recon Loss: 2942619.250000	lr: 0.030000
+[Mon Aug 14 11:28:01 2023|train.py|INFO] Train Epoch: 4 [45312/75568 (60%)]	Loss: 2983805.750000	KL Loss: 2054.292480	Recon Loss: 2981751.500000	lr: 0.030000
+[Mon Aug 14 11:28:06 2023|train.py|INFO] Train Epoch: 4 [60416/75568 (80%)]	Loss: 2655442.250000	KL Loss: 1870.721436	Recon Loss: 2653571.500000	lr: 0.030000
+[Mon Aug 14 11:28:11 2023|train.py|INFO] ====> Epoch: 4 Average loss: 2613272.2695
+[Mon Aug 14 11:28:11 2023|train.py|INFO] Train Epoch: 5
+[Mon Aug 14 11:28:19 2023|train.py|INFO] Train Epoch: 5 [0/75568 (0%)]	Loss: 2533843.500000	KL Loss: 1850.623535	Recon Loss: 2531993.000000	lr: 0.030000
+[Mon Aug 14 11:28:23 2023|train.py|INFO] Train Epoch: 5 [15104/75568 (20%)]	Loss: 2614824.750000	KL Loss: 1967.042725	Recon Loss: 2612857.750000	lr: 0.030000
+[Mon Aug 14 11:28:28 2023|train.py|INFO] Train Epoch: 5 [30208/75568 (40%)]	Loss: 2910998.250000	KL Loss: 1843.342529	Recon Loss: 2909155.000000	lr: 0.030000
+[Mon Aug 14 11:28:33 2023|train.py|INFO] Train Epoch: 5 [45312/75568 (60%)]	Loss: 3302373.250000	KL Loss: 3908.798828	Recon Loss: 3298464.500000	lr: 0.030000
+[Mon Aug 14 11:28:38 2023|train.py|INFO] Train Epoch: 5 [60416/75568 (80%)]	Loss: 2357290.750000	KL Loss: 3746.029297	Recon Loss: 2353544.750000	lr: 0.030000
+[Mon Aug 14 11:28:44 2023|train.py|INFO] ====> Epoch: 5 Average loss: 2768369.1956
+[Mon Aug 14 11:28:44 2023|train.py|INFO] Train Epoch: 6
+[Mon Aug 14 11:28:52 2023|train.py|INFO] Train Epoch: 6 [0/75568 (0%)]	Loss: 2481809.500000	KL Loss: 2877.521973	Recon Loss: 2478932.000000	lr: 0.030000
+[Mon Aug 14 11:28:56 2023|train.py|INFO] Train Epoch: 6 [15104/75568 (20%)]	Loss: 2947880.500000	KL Loss: 3347.870605	Recon Loss: 2944532.750000	lr: 0.030000
+[Mon Aug 14 11:29:01 2023|train.py|INFO] Train Epoch: 6 [30208/75568 (40%)]	Loss: 2355432.500000	KL Loss: 2910.072266	Recon Loss: 2352522.500000	lr: 0.030000
+[Mon Aug 14 11:29:06 2023|train.py|INFO] Train Epoch: 6 [45312/75568 (60%)]	Loss: 2798521.750000	KL Loss: 3106.609863	Recon Loss: 2795415.250000	lr: 0.030000
+[Mon Aug 14 11:29:11 2023|train.py|INFO] Train Epoch: 6 [60416/75568 (80%)]	Loss: 2541171.750000	KL Loss: 2444.630859	Recon Loss: 2538727.000000	lr: 0.030000
+[Mon Aug 14 11:29:16 2023|train.py|INFO] ====> Epoch: 6 Average loss: 2640749.3358
+[Mon Aug 14 11:29:16 2023|train.py|INFO] Train Epoch: 7
+[Mon Aug 14 11:29:25 2023|train.py|INFO] Train Epoch: 7 [0/75568 (0%)]	Loss: 2668995.250000	KL Loss: 2418.140137	Recon Loss: 2666577.000000	lr: 0.030000
+[Mon Aug 14 11:29:29 2023|train.py|INFO] Train Epoch: 7 [15104/75568 (20%)]	Loss: 2754142.250000	KL Loss: 2073.965820	Recon Loss: 2752068.250000	lr: 0.030000
+[Mon Aug 14 11:29:34 2023|train.py|INFO] Train Epoch: 7 [30208/75568 (40%)]	Loss: 2554990.500000	KL Loss: 2289.234863	Recon Loss: 2552701.250000	lr: 0.030000
+[Mon Aug 14 11:29:39 2023|train.py|INFO] Train Epoch: 7 [45312/75568 (60%)]	Loss: 2748253.750000	KL Loss: 2390.315186	Recon Loss: 2745863.500000	lr: 0.030000
+[Mon Aug 14 11:29:44 2023|train.py|INFO] Train Epoch: 7 [60416/75568 (80%)]	Loss: 2975026.250000	KL Loss: 1950.312622	Recon Loss: 2973076.000000	lr: 0.030000
+[Mon Aug 14 11:29:50 2023|train.py|INFO] ====> Epoch: 7 Average loss: 2671188.7513
+[Mon Aug 14 11:29:50 2023|train.py|INFO] Train Epoch: 8
+[Mon Aug 14 11:29:58 2023|train.py|INFO] Train Epoch: 8 [0/75568 (0%)]	Loss: 2269901.500000	KL Loss: 2816.908691	Recon Loss: 2267084.500000	lr: 0.030000
+[Mon Aug 14 11:30:03 2023|train.py|INFO] Train Epoch: 8 [15104/75568 (20%)]	Loss: 2638953.500000	KL Loss: 3108.115234	Recon Loss: 2635845.500000	lr: 0.030000
+[Mon Aug 14 11:30:08 2023|train.py|INFO] Train Epoch: 8 [30208/75568 (40%)]	Loss: 2629352.250000	KL Loss: 2436.215820	Recon Loss: 2626916.000000	lr: 0.030000
+[Mon Aug 14 11:30:13 2023|train.py|INFO] Train Epoch: 8 [45312/75568 (60%)]	Loss: 3033658.000000	KL Loss: 1779.343018	Recon Loss: 3031878.750000	lr: 0.030000
+[Mon Aug 14 11:30:18 2023|train.py|INFO] Train Epoch: 8 [60416/75568 (80%)]	Loss: 2615038.000000	KL Loss: 1458.304565	Recon Loss: 2613579.750000	lr: 0.030000
+[Mon Aug 14 11:30:24 2023|train.py|INFO] ====> Epoch: 8 Average loss: 2640058.1422
+[Mon Aug 14 11:30:24 2023|train.py|INFO] Train Epoch: 9
+[Mon Aug 14 11:30:32 2023|train.py|INFO] Train Epoch: 9 [0/75568 (0%)]	Loss: 2192128.250000	KL Loss: 1653.130615	Recon Loss: 2190475.000000	lr: 0.030000
+[Mon Aug 14 11:30:37 2023|train.py|INFO] Train Epoch: 9 [15104/75568 (20%)]	Loss: 2384679.250000	KL Loss: 2352.885986	Recon Loss: 2382326.250000	lr: 0.030000
+[Mon Aug 14 11:30:44 2023|train.py|INFO] Train Epoch: 9 [30208/75568 (40%)]	Loss: 3385642.250000	KL Loss: 2844.366699	Recon Loss: 3382798.000000	lr: 0.030000
+[Mon Aug 14 11:30:50 2023|train.py|INFO] Train Epoch: 9 [45312/75568 (60%)]	Loss: 2429133.000000	KL Loss: 2423.012451	Recon Loss: 2426710.000000	lr: 0.030000
+[Mon Aug 14 11:30:57 2023|train.py|INFO] Train Epoch: 9 [60416/75568 (80%)]	Loss: 2459839.000000	KL Loss: 1301.116699	Recon Loss: 2458538.000000	lr: 0.030000
+[Mon Aug 14 11:31:04 2023|train.py|INFO] ====> Epoch: 9 Average loss: 2736495.3900
+[Mon Aug 14 11:31:04 2023|train.py|INFO] Train Epoch: 10
+[Mon Aug 14 11:31:13 2023|train.py|INFO] Train Epoch: 10 [0/75568 (0%)]	Loss: 3110481.750000	KL Loss: 2272.544922	Recon Loss: 3108209.250000	lr: 0.030000
+[Mon Aug 14 11:31:18 2023|train.py|INFO] Train Epoch: 10 [15104/75568 (20%)]	Loss: 2591971.250000	KL Loss: 2305.779541	Recon Loss: 2589665.500000	lr: 0.030000
+[Mon Aug 14 11:31:25 2023|train.py|INFO] Train Epoch: 10 [30208/75568 (40%)]	Loss: 2778941.000000	KL Loss: 3487.928955	Recon Loss: 2775453.000000	lr: 0.030000
+[Mon Aug 14 11:31:32 2023|train.py|INFO] Train Epoch: 10 [45312/75568 (60%)]	Loss: 2443404.250000	KL Loss: 2427.350830	Recon Loss: 2440977.000000	lr: 0.030000
+[Mon Aug 14 11:31:40 2023|train.py|INFO] Train Epoch: 10 [60416/75568 (80%)]	Loss: 2484199.000000	KL Loss: 1755.026001	Recon Loss: 2482444.000000	lr: 0.030000
