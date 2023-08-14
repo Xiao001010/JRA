@@ -15,6 +15,7 @@ from tensorboardX import SummaryWriter
 import logging
 
 import matplotlib.pyplot as plt
+import matplotlib
 
 # Define the training function
 def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger):
@@ -92,6 +93,7 @@ def train(model, optimizer, schedular, criterion, train_loader, device, writer, 
 
 # Define the testing function
 def test(model, test_loader, device, logger, mean=None, std=None):
+    matplotlib.use('Agg')
     model.eval()
     with torch.no_grad():
         for i, (data, mask) in tqdm.tqdm(enumerate(test_loader)):
