@@ -5,15 +5,15 @@ import torch.nn.functional as F
 # Define the loss function: KL divergence + reconstruction loss
 class LossVAE(nn.Module):
 
-    def __init__(self, sigma=0.1, bg_var=0.5):
+    def __init__(self, sigma=0.1, bg_var=1.0):
         super(LossVAE, self).__init__()
         self.sigma = sigma
         self.bg_var = bg_var
         self.GaussianNLL = nn.GaussianNLLLoss(reduction='none')
 
-    def forward(self, x_hat, x, mu, log_var, mask):
+    def forward(self, x_hat, x, mu, log_var, mask, fg_var=None):
         kl_loss = self.kl_divergence(mu, log_var)
-        recon_loss = self.reconstruction_loss(x_hat, x, mask)
+        recon_loss = self.reconstruction_loss(x_hat, x, mask, fg_var=fg_var)
         loss = kl_loss + recon_loss
         return loss, kl_loss, recon_loss
 
@@ -28,7 +28,7 @@ class LossVAE(nn.Module):
         kl = 0.5 * torch.sum((torch.exp(log_var) + torch.square(mu) - 1 - log_var), -1)
         return torch.mean(kl)
 
-    def reconstruction_loss(self, x_hat, x, mask):
+    def reconstruction_loss(self, x_hat, x, mask, fg_var=None):
         """
         Compute the reconstruction loss
         :param x: 2D
@@ -37,7 +37,11 @@ class LossVAE(nn.Module):
         """
         var = torch.zeros_like(x_hat)
         mask = mask.repeat(1, 4, 1, 1)
-        var = var + (mask==0).float()*self.bg_var + mask.float() * self.sigma *self.sigma
+        if fg_var is None: 
+            fg_var = self.sigma * self.sigma
+        else:
+            fg_var = fg_var.view(x_hat.shape[0], 4, 1, 1).expand_as(x_hat)
+        var = var + (mask==0).float()*self.bg_var + mask.float() * fg_var
         # torch.set_printoptions(threshold=torch.inf)
         # print(var)
         # plt.imshow(var[0, 0, :, :].cpu().detach().numpy(), cmap='gray')
@@ -91,20 +95,6 @@ class LossRegression(nn.Module):
         """
         kl = 0.5 * torch.sum((torch.exp(log_var) + torch.square(mu) - 1 - log_var), -1)
         return torch.mean(kl)
-    
-    # def reconstruction_loss(self, x_hat, x, mask, mu, log_var):
-    #     """
-    #     Compute the reconstruction loss
-    #     :param x: 2D
-    #     :param x_hat: output of the decoder, considered as the mean of a distribution
-    #     :return: reconstruction
-    #     """
-    #     var = torch.zeros_like(x_hat)
-    #     mask = mask.repeat(1, 4, 1, 1)
-    #     var = var + (mask==0).float()*self.bg_var + mask.float() * self.sigma *self.sigma
-    #     var = var.to(x.device)
-    #     loss = torch.mean(torch.sum(self.GaussianNLL(x, x_hat, var).reshape(x.shape[0], -1), dim=1))
-    #     return loss
 
 
 if __name__ == "__main__":
@@ -117,5 +107,6 @@ if __name__ == "__main__":
     log_var = torch.randn(2, latent_dim)
     critiria = LossRegression(bg_var=1.0, latent_dim=latent_dim)
     loss, kl_loss, recon_loss = critiria(x_hat, x, mu, log_var, mask)
+    print(critiria)
     print(loss, kl_loss, recon_loss)
     print(loss.shape, kl_loss.shape, recon_loss.shape)

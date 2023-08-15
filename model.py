@@ -284,6 +284,7 @@ class ResVAE(nn.Module):
 
         self.encoder = Encoder(in_channels, latent_dim, use_batch_norm, dropout, layer_list)
         self.decoder = Decoder(latent_dim, use_batch_norm, dropout, layer_list)
+        self.fg_var_fc = nn.Linear(latent_dim, 4)
         self.latent_dim = latent_dim
 
     def encode(self, x):
@@ -296,7 +297,8 @@ class ResVAE(nn.Module):
     def forward(self, x):
         z, mu, log_var = self.encoder(x)
         x_hat = self.decoder(z)
-        return x_hat, mu, log_var
+        fg_var = torch.exp(self.fg_var_fc(z))
+        return x_hat, mu, log_var, fg_var
 
     def sample(self, num_samples):
         z = torch.randn(num_samples, self.latent_dim)
