@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from utils import *
 from model import ResVAE
 from dataset import CellDataset
-from criteria import LossVAE
+from criteria import LossVAE, LossRegression
 
 from train import train, test
 
@@ -89,8 +89,7 @@ if __name__ == '__main__':
     logger.info('Dropout rate: {}'.format(config['dropout']))
     logger.info('Layer list: {}'.format(config['layer_list']))
 
-    logger.info('Sigma: {}'.format(config['sigma']))
-    logger.info('Background variance: {}'.format(config['bg_var']))
+    logger.info('Loss type: {}'.format(config['loss']['loss_type']))
 
     logger.info('Epochs: {}'.format(config['epochs']))
     logger.info('Checkpoint save interval (epochs): {}'.format(config['save_interval']))
@@ -135,7 +134,17 @@ if __name__ == '__main__':
 
     # Set criterion
     logger.info('Building criterion ...')
-    criterion = LossVAE(config['sigma'], config['bg_var']).to(device)
+    loss_type = config['loss']['loss_type']
+    logger.info('Loss type: {}'.format(loss_type))
+    if loss_type == 'LossVAE':
+        criterion = LossVAE(config['loss']['sigma'], config['loss']['bg_var']).to(device)
+        logger.info('Sigma: {}'.format(config['loss']['sigma']))
+        logger.info('Background variance: {}'.format(config['loss']['bg_var']))
+    elif loss_type == 'LossRegression':
+        criterion = LossRegression(config['loss']['bg_var'], config['latent_dim']).to(device)
+        logger.info('Background variance: {}'.format(config['loss']['bg_var']))
+    else:
+        raise NotImplementedError
 
     # Start training
     logger.info('Start training ...')

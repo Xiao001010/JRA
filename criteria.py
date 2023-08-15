@@ -48,8 +48,9 @@ class LossVAE(nn.Module):
         return loss
     
 class GaussianRegression(nn.Module):
-    def __init__(self, input_dim, reduction='none'):
+    def __init__(self, input_dim, bg_var=1.0, reduction='none'):
         super(GaussianRegression, self).__init__()
+        self.bg_var = bg_var
         self.fc = nn.Linear(input_dim*2, 4)
         self.reduction = reduction
 
@@ -62,18 +63,16 @@ class GaussianRegression(nn.Module):
         mask = mask.repeat(1, 4, 1, 1)
         fg_var = fg_var.view(-1, 4, 1, 1).expand_as(x_hat)
         # print(mask.shape, fg_var.shape, var.shape)
-        var = var + (mask==0).float() + mask.float() * fg_var
+        var = var + (mask==0).float()*self.bg_var + mask.float() * fg_var
         var = var.to(x.device)
         # print(var[0, 0, :, :])
         loss = torch.mean(torch.sum(F.gaussian_nll_loss(x_hat, x, var, reduction=self.reduction).reshape(x.shape[0], -1), dim=1))
         return loss
 
 class LossRegression(nn.Module):
-    def __init__(self, sigma=0.1, bg_var=0.5, latent_dim=128):
+    def __init__(self, bg_var=1.0, latent_dim=128):
         super(LossRegression, self).__init__()
-        self.sigma = sigma
-        self.bg_var = bg_var
-        self.GaussianNLL = GaussianRegression(latent_dim, reduction='none')
+        self.GaussianNLL = GaussianRegression(latent_dim, bg_var, reduction='none')
 
     def forward(self, x_hat, x, mu, log_var, mask):
         kl_loss = self.kl_divergence(mu, log_var)
@@ -113,7 +112,10 @@ if __name__ == "__main__":
     mask = torch.zeros(2, 1, 28, 28)
     mask[:, :, 10:20, 10:20] = 1
     x_hat = torch.randn(2, 4, 28, 28)
-    mu = torch.randn(2, 128)
-    log_var = torch.randn(2, 128)
-    loss = LossRegression()
-    print(loss(x_hat, x, mu, log_var, mask))
+    latent_dim = 128
+    mu = torch.randn(2, latent_dim)
+    log_var = torch.randn(2, latent_dim)
+    critiria = LossRegression(bg_var=1.0, latent_dim=latent_dim)
+    loss, kl_loss, recon_loss = critiria(x_hat, x, mu, log_var, mask)
+    print(loss, kl_loss, recon_loss)
+    print(loss.shape, kl_loss.shape, recon_loss.shape)
