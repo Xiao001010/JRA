@@ -1,9 +1,3 @@
+/__pycache__
 /checkpoints
-/data/cell_images
-/data/Fluo_mask_data
-/data/Fluo_single_cell_data
-/data/Fluo-C2DL-Huh7
-/data/saved_cell_images_1237
-/data/saved_cell_images_1237_png
-/data/single_cell_data
-/data/tiff_raw_data
+/data
