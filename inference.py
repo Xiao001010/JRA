@@ -73,7 +73,7 @@ if __name__ == '__main__':
     for i, (data, mask) in enumerate(dataloader):
         data, mask = data.to(device), mask.to(device)
         with torch.no_grad():
-            recon, mu, logvar = model(data)
+            recon, mu, logvar, fg_var = model(data)
             original = data.cpu().detach().numpy()
             recon = recon.cpu().detach().numpy()
             mu = mu.cpu().detach().numpy()

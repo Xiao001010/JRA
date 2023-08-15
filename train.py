@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 # Define the training function
-def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger):
+def train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loader, device, writer, logger):
     logger.info('Train Epoch: {}'.format(epoch))
     train_loss = 0
     train_kl_loss = 0
@@ -27,8 +27,12 @@ def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, wr
         data = data.to(device)
         mask = mask.to(device)
         optimizer.zero_grad()
-        x_hat, mu, log_var = model(data)
-        loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
+        x_hat, mu, log_var, fg_var = model(data)
+        if predict_fgvar:
+            print('predict fg var: ', fg_var[0])
+            loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask, fg_var)
+        else:
+            loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
         loss.backward()
         train_loss += loss.item()
         train_kl_loss += kl_loss.item()
@@ -48,10 +52,10 @@ def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, wr
     logger.info('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss))
     return data, x_hat, train_loss, train_kl_loss, train_recon_loss
     
-def train(model, optimizer, schedular, criterion, train_loader, device, writer, logger, epochs, save_interval=10, save_path=None, mean=None, std=None):
+def train(model, optimizer, schedular, criterion, predict_fgvar, train_loader, device, writer, logger, epochs, save_interval=10, save_path=None, mean=None, std=None):
     model.train()
     for epoch in range(1, epochs + 1):
-        data, x_hat, train_loss, kl_loss, recon_loss = train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger)
+        data, x_hat, train_loss, kl_loss, recon_loss = train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loader, device, writer, logger)
         writer.add_scalar('epoch/lr', optimizer.param_groups[0]['lr'], epoch)
         writer.add_scalar('epoch/loss', train_loss, epoch+1)
         writer.add_scalar('epoch/kl_loss', kl_loss, epoch+1)
@@ -99,7 +103,7 @@ def test(model, test_loader, device, logger, mean=None, std=None):
         for i, (data, mask) in tqdm.tqdm(enumerate(test_loader)):
             data = data.to(device)
             mask = mask.to(device)
-            x_hat, mu, log_var = model(data)
+            x_hat, mu, log_var, fg_var = model(data)
             break
 
     data = data.cpu().detach().numpy()

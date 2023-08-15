@@ -89,7 +89,11 @@ if __name__ == '__main__':
     logger.info('Dropout rate: {}'.format(config['dropout']))
     logger.info('Layer list: {}'.format(config['layer_list']))
 
-    logger.info('Loss type: {}'.format(config['loss']['loss_type']))
+    logger.info('Loss sigma: {}'.format(config['loss']['sigma']))
+    logger.info('Loss bg_var: {}'.format(config['loss']['bg_var']))
+    predict_fgvar = config['loss']['sigma'] == 'None'
+    print('=============', predict_fgvar, type(config['loss']['sigma']))
+    logger.info('Predict fg var: {}'.format(predict_fgvar))
 
     logger.info('Epochs: {}'.format(config['epochs']))
     logger.info('Checkpoint save interval (epochs): {}'.format(config['save_interval']))
@@ -134,24 +138,14 @@ if __name__ == '__main__':
 
     # Set criterion
     logger.info('Building criterion ...')
-    loss_type = config['loss']['loss_type']
-    logger.info('Loss type: {}'.format(loss_type))
-    if loss_type == 'LossVAE':
-        criterion = LossVAE(config['loss']['sigma'], config['loss']['bg_var']).to(device)
-        logger.info('Sigma: {}'.format(config['loss']['sigma']))
-        logger.info('Background variance: {}'.format(config['loss']['bg_var']))
-    elif loss_type == 'LossRegression':
-        criterion = LossRegression(config['loss']['bg_var'], config['latent_dim']).to(device)
-        logger.info('Background variance: {}'.format(config['loss']['bg_var']))
-    else:
-        raise NotImplementedError
+    criterion = LossVAE(config['loss']['sigma'], config['loss']['bg_var'])
 
     # Start training
     logger.info('Start training ...')
-    train(model, optimizer, scheduler, criterion, train_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
+    train(model, optimizer, scheduler, criterion, predict_fgvar, train_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
 
     # Test
     logger.info('Start testing ...')
     test(model, train_loader, device, logger, config['mean'], config['std'])
 
-# python -W ignore main.py --config config/VAE-latentdim_128-sigma_0.001-bg_0.5.yaml
+# python -W ignore main.py --config config/VAE-latentdim_128-sigma_0.1-bg_0.5.yaml
