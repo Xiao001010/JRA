@@ -1,4 +1,4 @@
-task: 'VAE-latentdim_128-sigma_0.5-bg_0.8'
+task: 'VAE-latentdim_128-bg_1.0-LossReg'
 
 seed: 42
 
@@ -26,9 +26,8 @@ step_size: 25
 lr_decay: 0.8
 
 loss:
-  loss_type: 'LossVAE'
-  sigma: 0.5
-  bg_var: 0.8
+  loss_type: 'LossRegression'
+  bg_var: 1.0
 
 epochs: 500
 save_interval: 10
