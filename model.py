@@ -297,7 +297,7 @@ class ResVAE(nn.Module):
     def forward(self, x):
         z, mu, log_var = self.encoder(x)
         x_hat = self.decoder(z)
-        fg_var = torch.sigmoid(torch.exp(self.fg_var_fc(z)))
+        fg_var = torch.exp(torch.sigmoid(self.fg_var_fc(z))*-4)
         return x_hat, mu, log_var, fg_var
 
     def sample(self, num_samples):
