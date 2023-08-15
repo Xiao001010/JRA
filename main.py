@@ -92,7 +92,7 @@ if __name__ == '__main__':
     logger.info('Loss sigma: {}'.format(config['loss']['sigma']))
     logger.info('Loss bg_var: {}'.format(config['loss']['bg_var']))
     predict_fgvar = config['loss']['sigma'] == 'None'
-    print('=============', predict_fgvar, type(config['loss']['sigma']))
+    # print('=============', predict_fgvar, type(config['loss']['sigma']))
     logger.info('Predict fg var: {}'.format(predict_fgvar))
 
     logger.info('Epochs: {}'.format(config['epochs']))
