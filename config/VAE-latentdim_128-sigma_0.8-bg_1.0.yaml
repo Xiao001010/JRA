@@ -26,7 +26,6 @@ step_size: 25
 lr_decay: 0.8
 
 loss:
-  loss_type: 'LossVAE'
   sigma: 0.8
   bg_var: 1.0
 
