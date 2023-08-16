@@ -36,8 +36,9 @@ if __name__ == '__main__':
         for filename in filenames:
             if 'Epoch_500' in filename:
                 ckpt_path = os.path.join(dirpath, filename)
+                print('Load checkpoint from {}'.format(ckpt_path))
                 break
-            break
+            # break
         
     output_path = os.path.join('output/', task)
 
@@ -55,19 +56,19 @@ if __name__ == '__main__':
     trans = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(config['mean'], config['std']),
-        transforms.Resize((config['img_size'], config['img_size']))
+        transforms.Resize((config['image_size'], config['image_size']))
     ])
 
     trans_mask = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Resize((config['img_size'], config['img_size']))
+        transforms.Resize((config['image_size'], config['image_size']))
     ])
 
     dataset = CellDataset(config['data_path'], transform=trans, transform_mask=trans_mask)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=config['batch_size'], shuffle=False)
 
     model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list']).to(device)
-    model.load_state_dict(torch.load(ckpt_path)['model'])
+    model.load_state_dict(torch.load(ckpt_path)['model'], strict=False)
 
     model.eval()
     for i, (data, mask) in enumerate(dataloader):
@@ -107,6 +108,7 @@ if __name__ == '__main__':
     plt.suptitle('Original Images', fontsize=20)
     plt.tight_layout()
     plt.savefig(os.path.join(output_path, 'original.png'))
+    print('Save original images to {}'.format(os.path.join(output_path, 'original.png')))
 
     plt.figure(figsize=(15, 10))
     for i in range(16):
@@ -116,3 +118,5 @@ if __name__ == '__main__':
     plt.suptitle('Reconstructed Images', fontsize=20)
     plt.tight_layout()
     plt.savefig(os.path.join(output_path, 'reconstruction.png'))
+    print('Save reconstructed images to {}'.format(os.path.join(output_path, 'reconstruction.png')))
+    
