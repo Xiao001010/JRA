@@ -37,17 +37,19 @@ def train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loa
         else:
             loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
         loss.backward()
+        optimizer.step()
+
         mse_loss = F.mse_loss(x_hat, data)
         train_loss += loss.item()
         train_kl_loss += kl_loss.item()
         train_recon_loss += recon_loss.item()
         train_mse_loss += mse_loss.item()
-        optimizer.step()
+        
         if batch_idx %  (len(train_loader)//5) == 0:
             writer.add_scalar('iteration/loss', loss.item(), epoch * len(train_loader) + batch_idx)
             writer.add_scalar('iteration/kl_loss', kl_loss.item(), epoch * len(train_loader) + batch_idx)
             writer.add_scalar('iteration/recon_loss', recon_loss.item(), epoch * len(train_loader) + batch_idx)
-            writer.add_scalar('iteration/mse_loss', mse_loss.item(), epoch * len(train_loader) + batch_idx)
+            # writer.add_scalar('iteration/mse_loss', mse_loss.item(), epoch * len(train_loader) + batch_idx)
             logger.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}\tMSE Loss: {:.6f}\tLR: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item(), kl_loss.item(), recon_loss.item(), mse_loss.item(), optimizer.param_groups[0]['lr']))
@@ -69,7 +71,6 @@ def validate_one_epoch(epoch, model, criterion, predict_fgvar, val_loader, devic
     val_recon_loss = 0
     val_mse_loss = 0
 
-    model.eval()
     with torch.no_grad():
         for batch_idx, (data, mask) in tqdm.tqdm(enumerate(val_loader)):
             data = data.to(device)
@@ -104,8 +105,8 @@ def validate_one_epoch(epoch, model, criterion, predict_fgvar, val_loader, devic
 
 # Define the training function   
 def train(model, optimizer, schedular, criterion, predict_fgvar, train_loader, val_loader, device, writer, logger, num_epoch, save_interval=10, save_path=None, mean=None, std=None):
-    model.train()
     for epoch in range(1, num_epoch + 1):
+        model.train()
         train_loss, train_kl_loss, train_recon_loss, train_mse_loss = train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loader, device, writer, logger)
         writer.add_scalar('epoch/lr', optimizer.param_groups[0]['lr'], epoch)
         writer.add_scalar('epoch/train_loss', train_loss, epoch+1)
@@ -114,6 +115,7 @@ def train(model, optimizer, schedular, criterion, predict_fgvar, train_loader, v
         writer.add_scalar('epoch/train_mse_loss', train_mse_loss, epoch+1)
         schedular.step()
 
+        model.eval()
         data, x_hat, val_loss, val_kl_loss, val_recon_loss, val_mse_loss = validate_one_epoch(epoch, model, criterion, predict_fgvar, val_loader, device, writer, logger)
 
         writer.add_scalar('epoch/val_loss', val_loss, epoch+1)
