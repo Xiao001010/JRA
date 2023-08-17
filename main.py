@@ -13,6 +13,7 @@ from torchvision import transforms
 
 from torch.utils.tensorboard import SummaryWriter
 import logging
+from torch.utils.data import DataLoader, random_split
 
 import matplotlib.pyplot as plt
 
@@ -116,7 +117,14 @@ if __name__ == '__main__':
 
     logger.info('Loading dataset from {} ...'.format(config['data_path']))
     train_dataset = CellDataset(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=config['shuffle'], num_workers=config['num_workers'], pin_memory=True, drop_last=True)
+
+    # Split train and val
+    train_size = int(config['split_ratio'] * len(train_dataset))
+    val_size = len(train_dataset) - train_size
+    train_dataset, val_dataset = random_split(train_dataset, [train_size, val_size])
+
+    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=config['shuffle'], num_workers=config['num_workers'], pin_memory=True, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=config['shuffle'], num_workers=config['num_workers'], pin_memory=True, drop_last=True)
 
     # Set model
     logger.info('Building model ...')
@@ -142,7 +150,7 @@ if __name__ == '__main__':
 
     # Start training
     logger.info('Start training ...')
-    train(model, optimizer, scheduler, criterion, predict_fgvar, train_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
+    train(model, optimizer, scheduler, criterion, predict_fgvar, train_loader, val_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
 
     # Test
     logger.info('Start testing ...')
