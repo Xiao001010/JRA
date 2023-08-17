@@ -6,12 +6,14 @@ log_dir: 'logs'
 ckpt_dir: 'checkpoints'
 
 data_path: 'data/single_cell_data_with_mask'
-batch_size: 128
-num_workers: 4
-shuffle: True
 mean: [6076.6860, 1350.9691, 5090.1455, 5019.9780]
 std: [5504.3955, 1145.6356,  663.3312,  706.0040]
 image_size: 32
+split_ratio: 0.8
+
+batch_size: 128
+shuffle: True
+num_workers: 4
 
 model: 'VAE'
 in_channels: 4
