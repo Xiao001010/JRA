@@ -9,6 +9,7 @@ import tifffile
 import numpy as np
 import torch
 import torch.optim as optim
+import torch.nn.functional as F
 
 import tensorboardX
 from tensorboardX import SummaryWriter
@@ -17,12 +18,14 @@ import logging
 import matplotlib.pyplot as plt
 import matplotlib
 
-# Define the training function
+# Define the train one epoch function
 def train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loader, device, writer, logger):
     logger.info('Train Epoch: {}'.format(epoch))
     train_loss = 0
     train_kl_loss = 0
     train_recon_loss = 0
+    train_mse_loss = 0
+
     for batch_idx, (data, mask) in tqdm.tqdm(enumerate(train_loader)):
         data = data.to(device)
         mask = mask.to(device)
@@ -34,33 +37,90 @@ def train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loa
         else:
             loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
         loss.backward()
+        mse_loss = F.mse_loss(x_hat, data)
         train_loss += loss.item()
         train_kl_loss += kl_loss.item()
         train_recon_loss += recon_loss.item()
+        train_mse_loss += mse_loss.item()
         optimizer.step()
         if batch_idx %  (len(train_loader)//5) == 0:
             writer.add_scalar('iteration/loss', loss.item(), epoch * len(train_loader) + batch_idx)
             writer.add_scalar('iteration/kl_loss', kl_loss.item(), epoch * len(train_loader) + batch_idx)
             writer.add_scalar('iteration/recon_loss', recon_loss.item(), epoch * len(train_loader) + batch_idx)
-            logger.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}\tlr: {:.6f}'.format(
+            writer.add_scalar('iteration/mse_loss', mse_loss.item(), epoch * len(train_loader) + batch_idx)
+            logger.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}\tMSE Loss: {:.6f}\tLR: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item(), kl_loss.item(), recon_loss.item(), optimizer.param_groups[0]['lr']))
+                100. * batch_idx / len(train_loader), loss.item(), kl_loss.item(), recon_loss.item(), mse_loss.item(), optimizer.param_groups[0]['lr']))
 
     train_loss /= len(train_loader)
     train_kl_loss /= len(train_loader)
     train_recon_loss /= len(train_loader)
-    logger.info('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss))
-    return data, x_hat, train_loss, train_kl_loss, train_recon_loss
+    train_mse_loss /= len(train_loader)
+    logger.info('====> Epoch: {} Average loss: {:.4f}\tKL Loss: {:.4f}\tRecon Loss: {:.4f}\tMSE Loss: {:.4f}\tLR: {:.6f}'.format(
+        epoch, train_loss, train_kl_loss, train_recon_loss, train_mse_loss, optimizer.param_groups[0]['lr']))
     
-def train(model, optimizer, schedular, criterion, predict_fgvar, train_loader, device, writer, logger, epochs, save_interval=10, save_path=None, mean=None, std=None):
+    return train_loss, train_kl_loss, train_recon_loss, train_mse_loss
+
+# define the validate one epoch function
+def validate_one_epoch(epoch, model, criterion, predict_fgvar, val_loader, device, writer, logger):
+    logger.info('Val Epoch: {}'.format(epoch))
+    val_loss = 0
+    val_kl_loss = 0
+    val_recon_loss = 0
+    val_mse_loss = 0
+
+    model.eval()
+    with torch.no_grad():
+        for batch_idx, (data, mask) in tqdm.tqdm(enumerate(val_loader)):
+            data = data.to(device)
+            mask = mask.to(device)
+            x_hat, mu, log_var, fg_var = model(data)
+            if predict_fgvar:
+                loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask, fg_var)
+            else:
+                loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
+            mse_loss = F.mse_loss(x_hat, data)
+            val_loss += loss.item()
+            val_kl_loss += kl_loss.item()
+            val_recon_loss += recon_loss.item()
+            val_mse_loss += mse_loss.item()
+            if batch_idx % (len(val_loader)//5) == 0:
+                writer.add_scalar('iteration/val_loss', loss.item(), epoch * len(val_loader) + batch_idx)
+                writer.add_scalar('iteration/val_kl_loss', kl_loss.item(), epoch * len(val_loader) + batch_idx)
+                writer.add_scalar('iteration/val_recon_loss', recon_loss.item(), epoch * len(val_loader) + batch_idx)
+                writer.add_scalar('iteration/val_mse_loss', mse_loss.item(), epoch * len(val_loader) + batch_idx)
+                logger.info('Val Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}\tMSE Loss: {:.6f}'.format(
+                    epoch, batch_idx * len(data), len(val_loader.dataset),
+                    100. * batch_idx / len(val_loader), loss.item(), kl_loss.item(), recon_loss.item(), mse_loss.item()))
+                
+    val_loss /= len(val_loader)
+    val_kl_loss /= len(val_loader)
+    val_recon_loss /= len(val_loader)
+    val_mse_loss /= len(val_loader)
+    logger.info('====> Val Epoch: {} Average loss: {:.4f}\tKL Loss: {:.4f}\tRecon Loss: {:.4f}\tMSE Loss: {:.4f}'.format(
+        epoch, val_loss, val_kl_loss, val_recon_loss, val_mse_loss))
+    
+    return data, x_hat, val_loss, val_kl_loss, val_recon_loss, val_mse_loss
+
+# Define the training function   
+def train(model, optimizer, schedular, criterion, predict_fgvar, train_loader, val_loader, device, writer, logger, num_epoch, save_interval=10, save_path=None, mean=None, std=None):
     model.train()
-    for epoch in range(1, epochs + 1):
-        data, x_hat, train_loss, kl_loss, recon_loss = train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loader, device, writer, logger)
+    for epoch in range(1, num_epoch + 1):
+        train_loss, train_kl_loss, train_recon_loss, train_mse_loss = train_one_epoch(epoch, model, optimizer, criterion, predict_fgvar, train_loader, device, writer, logger)
         writer.add_scalar('epoch/lr', optimizer.param_groups[0]['lr'], epoch)
-        writer.add_scalar('epoch/loss', train_loss, epoch+1)
-        writer.add_scalar('epoch/kl_loss', kl_loss, epoch+1)
-        writer.add_scalar('epoch/recon_loss', recon_loss, epoch+1)
+        writer.add_scalar('epoch/train_loss', train_loss, epoch+1)
+        writer.add_scalar('epoch/train_kl_loss', train_kl_loss, epoch+1)
+        writer.add_scalar('epoch/train_recon_loss', train_recon_loss, epoch+1)
+        writer.add_scalar('epoch/train_mse_loss', train_mse_loss, epoch+1)
         schedular.step()
+
+        data, x_hat, val_loss, val_kl_loss, val_recon_loss, val_mse_loss = validate_one_epoch(epoch, model, criterion, predict_fgvar, val_loader, device, writer, logger)
+
+        writer.add_scalar('epoch/val_loss', val_loss, epoch+1)
+        writer.add_scalar('epoch/val_kl_loss', val_kl_loss, epoch+1)
+        writer.add_scalar('epoch/val_recon_loss', val_recon_loss, epoch+1)
+        writer.add_scalar('epoch/val_mse_loss', val_mse_loss, epoch+1)
+
         if epoch % save_interval == 0:
             if save_path:
                 ckt_path = os.path.join(save_path, 'VAE-Epoch_{}-Loss_{:.4f}.pth'.format(epoch, train_loss))
@@ -71,28 +131,22 @@ def train(model, optimizer, schedular, criterion, predict_fgvar, train_loader, d
                 torch.save(checkpoint, ckt_path)
                 logger.info('Model saved at {}'.format(ckt_path))
 
-                data = data.cpu().detach().numpy()
-                x_hat = x_hat.cpu().detach().numpy()
-                
-                vis_idx = random.randint(0, len(data))
-                if mean:
-                    # print('=================1', data.shape)
-                    data = (data.transpose(0, 2, 3, 1) * std + mean).transpose(0, 3, 1, 2)
-                    x_hat = (x_hat.transpose(0, 2, 3, 1) * std + mean).transpose(0, 3, 1, 2)
-                # print('=================2', data.shape)
-                # print('=================3', len(train_loader.dataset), len(train_loader), len(data), len(x_hat))
-                # print('=================4', vis_idx, data[vis_idx].shape, x_hat[vis_idx].shape)
-                writer.add_image('original1', data[vis_idx][0][np.newaxis, :, :], epoch+1)
-                writer.add_image('original2', data[vis_idx][1][np.newaxis, :, :], epoch+1)
-                writer.add_image('original3', data[vis_idx][2][np.newaxis, :, :], epoch+1)
-                writer.add_image('original4', data[vis_idx][3][np.newaxis, :, :], epoch+1)
-                writer.add_image('reconstruction1', x_hat[vis_idx][0][np.newaxis, :, :], epoch+1)
-                writer.add_image('reconstruction2', x_hat[vis_idx][1][np.newaxis, :, :], epoch+1)
-                writer.add_image('reconstruction3', x_hat[vis_idx][2][np.newaxis, :, :], epoch+1)
-                writer.add_image('reconstruction4', x_hat[vis_idx][3][np.newaxis, :, :], epoch+1)
-                vis_path = os.path.dirname(logger.handlers[-1].baseFilename)
-                tifffile.imwrite(os.path.join(vis_path, 'original_{}.tif'.format(epoch)), data[vis_idx])
-                tifffile.imwrite(os.path.join(vis_path, 'reconstruction_{}.tif'.format(epoch)), x_hat[vis_idx])
+            data = data.cpu().detach().numpy()
+            x_hat = x_hat.cpu().detach().numpy()
+            
+            vis_idx = random.randint(0, len(data))
+            if mean:
+                # print('=================1', data.shape)
+                data = (data.transpose(0, 2, 3, 1) * std + mean).transpose(0, 3, 1, 2)
+                x_hat = (x_hat.transpose(0, 2, 3, 1) * std + mean).transpose(0, 3, 1, 2)
+            # print('=================2', data.shape)
+            vis_path = os.path.dirname(logger.handlers[-1].baseFilename)
+            tifffile.imwrite(os.path.join(vis_path, 'original_{}.tif'.format(epoch)), data[vis_idx])
+            tifffile.imwrite(os.path.join(vis_path, 'reconstruction_{}.tif'.format(epoch)), x_hat[vis_idx])
+
+            logger.info('Original image saved at {}'.format(os.path.join(vis_path, 'original_{}.tif'.format(epoch))))
+            logger.info('Reconstructed image saved at {}'.format(os.path.join(vis_path, 'reconstruction_{}.tif'.format(epoch))))
+
     return model
 
 # Define the testing function
