@@ -57,6 +57,7 @@ class CellDataset_test(Dataset):
         if self.transform:
             img = self.transform(img)
             mask = self.transform_mask(mask)
+        img[0] = np.clip(img[0], 300, 28000)
         img[1] = img[0]
         img[2] = img[0]
         img[3] = img[0]
