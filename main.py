@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 from utils import *
 from model import ResVAE
-from dataset import CellDataset
+from dataset import CellDataset, CellDataset_test
 from criteria import LossVAE, LossRegression
 
 from train import train, test
@@ -116,7 +116,8 @@ if __name__ == '__main__':
     logger.info('Train mask transform: {}'.format(train_mask_transform))
 
     logger.info('Loading dataset from {} ...'.format(config['data_path']))
-    train_dataset = CellDataset(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
+    train_dataset = CellDataset_test(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
+    # train_dataset = CellDataset(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
 
     # Split train and val
     train_size = int(config['split_ratio'] * len(train_dataset))
@@ -156,4 +157,4 @@ if __name__ == '__main__':
     logger.info('Start testing ...')
     test(model, train_loader, device, logger, config['mean'], config['std'])
 
-# python -W ignore main.py --config config/VAE-latentdim_128-sigma_0.1-bg_0.5.yaml
+# python -W ignore main.py --config config/VAE-latentdim_128-sigma_0.8-bg_1.0.yaml
