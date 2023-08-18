@@ -284,7 +284,16 @@ class ResVAE(nn.Module):
 
         self.encoder = Encoder(in_channels, latent_dim, use_batch_norm, dropout, layer_list)
         self.decoder = Decoder(latent_dim, use_batch_norm, dropout, layer_list)
-        self.fg_var_fc = nn.Linear(latent_dim, 4)
+        # self.fg_var_fc = nn.Linear(latent_dim, 4)
+        self.fg_var_fc = nn.Sequential(
+            nn.Linear(latent_dim, 64),
+            nn.LeakyReLU(),
+            nn.Linear(64, 4)
+        )
+        # self.fg_var_fc = nn.Sequential(
+        #     nn.Linear(latent_dim, 64),
+        #     nn.softplus()
+        # )
         self.latent_dim = latent_dim
 
     def encode(self, x):
@@ -297,7 +306,7 @@ class ResVAE(nn.Module):
     def forward(self, x):
         z, mu, log_var = self.encoder(x)
         x_hat = self.decoder(z)
-        fg_var = torch.exp(torch.sigmoid(self.fg_var_fc(z))*-4)
+        fg_var = torch.exp(torch.tanh(self.fg_var_fc(z))*4)
         return x_hat, mu, log_var, fg_var
 
     def sample(self, num_samples):
