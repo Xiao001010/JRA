@@ -1,0 +1,37 @@
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Task: VAE-latentdim_128-sigma_pred-bg_1.0
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Device: cuda
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Config path: config/VAE-latentdim_128-sigma_pred-bg_1.0.yaml
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Log path: logs\VAE-latentdim_128-sigma_pred-bg_1.0\2023-08-16-14-58-16\train.log
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Checkpoint path: checkpoints\VAE-latentdim_128-sigma_pred-bg_1.0\2023-08-16-14-58-16
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Random seed: 42
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Batch size: 128
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Data path: data/single_cell_data_with_mask
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Number of workers: 4
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Shuffle: True
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Mean: [6076.686, 1350.9691, 5090.1455, 5019.978]
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Std: [5504.3955, 1145.6356, 663.3312, 706.004]
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Image size: 32
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Lr scheduler: StepLR
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Learning rate: 0.03
+[Wed Aug 16 14:58:17 2023|main.py|INFO] In channels: 4
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Image size: 32
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Latent dim: 128
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Use batch norm: True
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Dropout rate: 0.0
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Layer list: [2, 2, 2, 2]
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Loss sigma: None
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Loss bg_var: 1.0
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Predict fg var: True
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Epochs: 500
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Checkpoint save interval (epochs): 10
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Train transform: Compose(
+    ToTensor()
+    Normalize(mean=[6076.686, 1350.9691, 5090.1455, 5019.978], std=[5504.3955, 1145.6356, 663.3312, 706.004])
+    Resize(size=(32, 32), interpolation=bilinear, max_size=None, antialias=warn)
+)
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Train mask transform: Compose(
+    ToTensor()
+    Resize(size=(32, 32), interpolation=bilinear, max_size=None, antialias=warn)
+)
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Loading dataset from data/single_cell_data_with_mask ...
+[Wed Aug 16 14:58:17 2023|main.py|INFO] Building model ...
