@@ -26,6 +26,10 @@ class CellDataset(Dataset):
         # print(img[0][0])
         img = np.transpose(img, (1, 2, 0))
         mask = tifffile.imread(self.data[idx][:-4] + '_mask.tif')
+        img[0] = np.clip(img[0], 300, 28000)
+        img[1] = np.clip(img[1], 180, 10800)
+        img[2] = np.clip(img[2], 1800, 14400)
+        img[3] = np.clip(img[3], 1800, 11800)
         # print(mask)
         if self.transform:
             img = self.transform(img)
@@ -53,13 +57,13 @@ class CellDataset_test(Dataset):
         # print(img[0][0])
         img = np.transpose(img, (1, 2, 0))
         mask = tifffile.imread(self.data[idx][:-4] + '_mask.tif')
-        # print(mask)
-        if self.transform:
-            img = self.transform(img)
-            mask = self.transform_mask(mask)
         img[0] = np.clip(img[0], 300, 28000)
         img[1] = img[0]
         img[2] = img[0]
         img[3] = img[0]
+        # print(mask)
+        if self.transform:
+            img = self.transform(img)
+            mask = self.transform_mask(mask)
         return img, mask
     
