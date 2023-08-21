@@ -38,7 +38,7 @@ class CellDataset(Dataset):
     
 
 # Define test Dataset
-class CellDataset_test(Dataset):
+class CellDataset_1st(Dataset):
     def __init__(self, data_path, transform=None, transform_mask=None):
         self.transform = transform
         self.transform_mask = transform_mask
