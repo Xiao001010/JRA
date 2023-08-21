@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 from utils import *
 from model import ResVAE
-from dataset import CellDataset, CellDataset_test
+from dataset import CellDataset, CellDataset_1st
 from criteria import LossVAE, LossRegression
 
 from train import train, test
@@ -92,9 +92,11 @@ if __name__ == '__main__':
 
     logger.info('Loss sigma: {}'.format(config['loss']['sigma']))
     logger.info('Loss bg_var: {}'.format(config['loss']['bg_var']))
-    predict_fgvar = config['loss']['sigma'] == 'None'
+    predict_var = config['loss']['sigma'] == 'None'
     # print('=============', predict_fgvar, type(config['loss']['sigma']))
-    logger.info('Predict fg var: {}'.format(predict_fgvar))
+    logger.info('Predict fg var: {}'.format(predict_var))
+    predict_bgvar = config['loss']['bg_var'] == 'None'
+    logger.info('Predict bg var: {}'.format(predict_bgvar))
 
     logger.info('Epochs: {}'.format(config['epochs']))
     logger.info('Checkpoint save interval (epochs): {}'.format(config['save_interval']))
@@ -116,7 +118,11 @@ if __name__ == '__main__':
     logger.info('Train mask transform: {}'.format(train_mask_transform))
 
     logger.info('Loading dataset from {} ...'.format(config['data_path']))
-    train_dataset = CellDataset_test(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
+    logger.info('Only 1st channel: {}'.format(config['only_1st']))
+    if config['only_1st']: 
+        train_dataset = CellDataset_1st(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
+    else:
+        train_dataset = CellDataset(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
     # train_dataset = CellDataset(config['data_path'], transform=train_transform, transform_mask=train_mask_transform)
 
     # Split train and val
@@ -129,7 +135,12 @@ if __name__ == '__main__':
 
     # Set model
     logger.info('Building model ...')
-    model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list']).to(device)
+    if predict_var and predict_bgvar:
+        model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list'], pred_var=8).to(device)
+    elif predict_var and not predict_bgvar:
+        model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list'], pred_var=4).to(device)
+    else:
+        model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list']).to(device)
     logger.info('Model: {}'.format(model))
 
     # Set optimizer
@@ -151,7 +162,7 @@ if __name__ == '__main__':
 
     # Start training
     logger.info('Start training ...')
-    train(model, optimizer, scheduler, criterion, predict_fgvar, train_loader, val_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
+    train(model, optimizer, scheduler, criterion, predict_var, train_loader, val_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
 
     # Test
     logger.info('Start testing ...')

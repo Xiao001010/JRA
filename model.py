@@ -3,6 +3,8 @@ import math
 import torch
 import torch.nn as nn
 
+import torch.nn.functional as F
+
 # Define VAE model
 # calculate the output shape of the convolutional layer
 def calc_activation_shape(dim, ksize=(5, 5), stride=(1, 1), padding=(0, 0), dilation=(1, 1), output_padding=(0, 0),
@@ -276,20 +278,24 @@ class Decoder(nn.Module):
 # Define the VAE: encoder + decoder
 class ResVAE(nn.Module):
 
-    def __init__(self, in_channels, latent_dim, use_batch_norm=False, dropout=0.0, layer_list=None):
+    def __init__(self, in_channels, latent_dim, use_batch_norm=False, dropout=0.0, layer_list=None, pred_var=None):
         super(ResVAE, self).__init__()
 
         if layer_list is None:
             layer_list = [3, 4, 6, 3]
 
+        self.pred_var = pred_var
+
         self.encoder = Encoder(in_channels, latent_dim, use_batch_norm, dropout, layer_list)
         self.decoder = Decoder(latent_dim, use_batch_norm, dropout, layer_list)
-        # self.fg_var_fc = nn.Linear(latent_dim, 4)
-        self.fg_var_fc = nn.Sequential(
-            nn.Linear(latent_dim, 64),
-            nn.LeakyReLU(),
-            nn.Linear(64, 4)
-        )
+        # self.var_fc = nn.Linear(latent_dim, pred_var)
+        if pred_var is not None:
+            self.var_fc = nn.Linear(latent_dim, pred_var)
+            # self.var_fc = nn.Sequential(
+            #     nn.Linear(latent_dim, 64),
+            #     nn.LeakyReLU(),
+            #     nn.Linear(64, pred_var)
+            # )
         # self.fg_var_fc = nn.Sequential(
         #     nn.Linear(latent_dim, 64),
         #     nn.softplus()
@@ -306,10 +312,22 @@ class ResVAE(nn.Module):
     def forward(self, x):
         z, mu, log_var = self.encoder(x)
         x_hat = self.decoder(z)
-        fg_var = torch.exp(torch.tanh(self.fg_var_fc(z))*4)
-        return x_hat, mu, log_var, fg_var
+        if self.pred_var:
+            var = F.softplus(self.var_fc(z))
+            # var = torch.exp(self.var_fc(z))
+        else:
+            var = None
+        return x_hat, mu, log_var, var
 
     def sample(self, num_samples):
         z = torch.randn(num_samples, self.latent_dim)
         return z
     
+
+if __name__ == '__main__':
+    model = ResVAE(4, 128)
+    print(model)
+    x = torch.randn(2, 4, 32, 32)
+    x_hat, mu, log_var, var = model(x)
+    print(x_hat.shape, mu.shape, log_var.shape, var.shape)
+    print(var.shape[1])
