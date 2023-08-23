@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
     # Start training
     logger.info('Start training ...')
-    train(model, optimizer, scheduler, criterion, predict_var, train_loader, val_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
+    train(model, optimizer, scheduler, criterion, train_loader, val_loader, device, writer, logger, config['epochs'], config['save_interval'], ckpt_path, config['mean'], config['std'])
 
     # Test
     logger.info('Start testing ...')

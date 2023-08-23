@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 # Define the train one epoch function
-def train_one_epoch(epoch, model, optimizer, criterion, predict_var, train_loader, device, writer, logger):
+def train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger):
     logger.info('Train Epoch: {}'.format(epoch))
     train_loss = 0
     train_kl_loss = 0
@@ -30,10 +30,12 @@ def train_one_epoch(epoch, model, optimizer, criterion, predict_var, train_loade
         data = data.to(device)
         mask = mask.to(device)
         optimizer.zero_grad()
-        x_hat, mu, log_var, fg_var = model(data)
-        if predict_var:
+        x_hat, mu, log_var, pred_var = model(data)
+        # predict_var = (pred_var.shape[1] >= 4)
+        # predict_fg_only = (pred_var.shape[1] == 4)
+        if pred_var.shape[1] >= 4:
             # print('predict fg var: ', fg_var[0])
-            loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask, fg_var)
+            loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask, pred_var)
         else:
             loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
         loss.backward()
@@ -53,15 +55,23 @@ def train_one_epoch(epoch, model, optimizer, criterion, predict_var, train_loade
             logger.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tKL Loss: {:.6f}\tRecon Loss: {:.6f}\tMSE Loss: {:.6f}\tLR: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item(), kl_loss.item(), recon_loss.item(), mse_loss.item(), optimizer.param_groups[0]['lr']))
-            if predict_var:
-                writer.add_scalar('iteration/fg_var1', fg_var[0][0].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/fg_var2', fg_var[0][1].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/fg_var3', fg_var[0][2].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/fg_var4', fg_var[0][3].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/bg_var1', fg_var[0][4].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/bg_var2', fg_var[0][5].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/bg_var3', fg_var[0][6].item(), epoch * len(train_loader) + batch_idx)
-                writer.add_scalar('iteration/bg_var4', fg_var[0][7].item(), epoch * len(train_loader) + batch_idx)
+            if pred_var.shape[1] == 8:
+                writer.add_scalar('iteration/fg_var1', pred_var[0][0].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/fg_var2', pred_var[0][1].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/fg_var3', pred_var[0][2].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/fg_var4', pred_var[0][3].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/bg_var1', pred_var[0][4].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/bg_var2', pred_var[0][5].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/bg_var3', pred_var[0][6].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/bg_var4', pred_var[0][7].item(), epoch * len(train_loader) + batch_idx)
+            elif pred_var.shape[1] == 4:
+                writer.add_scalar('iteration/fg_var1', pred_var[0][0].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/fg_var2', pred_var[0][1].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/fg_var3', pred_var[0][2].item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar('iteration/fg_var4', pred_var[0][3].item(), epoch * len(train_loader) + batch_idx)
+            else:
+                pass
+
 
     train_loss /= len(train_loader)
     train_kl_loss /= len(train_loader)
@@ -73,7 +83,7 @@ def train_one_epoch(epoch, model, optimizer, criterion, predict_var, train_loade
     return train_loss, train_kl_loss, train_recon_loss, train_mse_loss
 
 # define the validate one epoch function
-def validate_one_epoch(epoch, model, criterion, predict_var, val_loader, device, writer, logger):
+def validate_one_epoch(epoch, model, criterion, val_loader, device, writer, logger):
     logger.info('Val Epoch: {}'.format(epoch))
     val_loss = 0
     val_kl_loss = 0
@@ -84,9 +94,9 @@ def validate_one_epoch(epoch, model, criterion, predict_var, val_loader, device,
         for batch_idx, (data, mask) in tqdm.tqdm(enumerate(val_loader)):
             data = data.to(device)
             mask = mask.to(device)
-            x_hat, mu, log_var, fg_var = model(data)
-            if predict_var:
-                loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask, fg_var)
+            x_hat, mu, log_var, pred_var = model(data)
+            if pred_var.shape[1] >= 4:
+                loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask, pred_var)
             else:
                 loss, kl_loss, recon_loss = criterion(x_hat, data, mu, log_var, mask)
             mse_loss = F.mse_loss(x_hat, data)
@@ -113,10 +123,10 @@ def validate_one_epoch(epoch, model, criterion, predict_var, val_loader, device,
     return data, x_hat, val_loss, val_kl_loss, val_recon_loss, val_mse_loss
 
 # Define the training function   
-def train(model, optimizer, schedular, criterion, predict_var, train_loader, val_loader, device, writer, logger, num_epoch, save_interval=10, save_path=None, mean=None, std=None):
+def train(model, optimizer, schedular, criterion, train_loader, val_loader, device, writer, logger, num_epoch, save_interval=10, save_path=None, mean=None, std=None):
     for epoch in range(1, num_epoch + 1):
         model.train()
-        train_loss, train_kl_loss, train_recon_loss, train_mse_loss = train_one_epoch(epoch, model, optimizer, criterion, predict_var, train_loader, device, writer, logger)
+        train_loss, train_kl_loss, train_recon_loss, train_mse_loss = train_one_epoch(epoch, model, optimizer, criterion, train_loader, device, writer, logger)
         writer.add_scalar('epoch/lr', optimizer.param_groups[0]['lr'], epoch)
         writer.add_scalar('epoch/train_loss', train_loss, epoch+1)
         writer.add_scalar('epoch/train_kl_loss', train_kl_loss, epoch+1)
@@ -125,7 +135,7 @@ def train(model, optimizer, schedular, criterion, predict_var, train_loader, val
         schedular.step()
 
         model.eval()
-        data, x_hat, val_loss, val_kl_loss, val_recon_loss, val_mse_loss = validate_one_epoch(epoch, model, criterion, predict_var, val_loader, device, writer, logger)
+        data, x_hat, val_loss, val_kl_loss, val_recon_loss, val_mse_loss = validate_one_epoch(epoch, model, criterion, val_loader, device, writer, logger)
 
         writer.add_scalar('epoch/val_loss', val_loss, epoch+1)
         writer.add_scalar('epoch/val_kl_loss', val_kl_loss, epoch+1)
@@ -168,7 +178,7 @@ def test(model, test_loader, device, logger, mean=None, std=None):
         for i, (data, mask) in tqdm.tqdm(enumerate(test_loader)):
             data = data.to(device)
             mask = mask.to(device)
-            x_hat, mu, log_var, fg_var = model(data)
+            x_hat, mu, log_var, pred_var = model(data)
             break
 
     data = data.cpu().detach().numpy()
