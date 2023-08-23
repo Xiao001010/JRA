@@ -289,7 +289,7 @@ class ResVAE(nn.Module):
         self.encoder = Encoder(in_channels, latent_dim, use_batch_norm, dropout, layer_list)
         self.decoder = Decoder(latent_dim, use_batch_norm, dropout, layer_list)
         # self.var_fc = nn.Linear(latent_dim, pred_var)
-        if pred_var is not None:
+        if pred_var:
             self.var_fc = nn.Linear(latent_dim, pred_var)
             # self.var_fc = nn.Sequential(
             #     nn.Linear(latent_dim, 64),
@@ -324,8 +324,87 @@ class ResVAE(nn.Module):
         return z
     
 
+class SimpleVAE(nn.Module):
+    def __init__(self, in_channels, latent_dim, pred_var=None):
+        super(SimpleVAE, self).__init__()
+
+        self.in_channels = in_channels
+        self.latent_dim = latent_dim
+        self.pred_var = pred_var
+
+        self.encoder = nn.Sequential(
+            nn.Conv2d(in_channels, 8, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(8, 16, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(128, 64, kernel_size=1, stride=1, padding=0),
+            nn.LeakyReLU(),
+        )
+
+        self.fc_mu = nn.Linear(64, latent_dim)
+        self.fc_var = nn.Linear(64, latent_dim)
+
+        self.fc = nn.Linear(latent_dim, 128)
+
+        self.decoder = nn.Sequential(
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+            nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(),
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+            nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(),
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+            nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(),
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+            nn.Conv2d(16, 8, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(),
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+            nn.Conv2d(8, 4, kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(),
+        )
+
+        if pred_var:
+            self.fc_pred_var = nn.Linear(latent_dim, self.pred_var)
+
+    def reparameterize(self, mu, log_var):
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn_like(std)
+
+        return mu + std * eps
+    
+    def forward(self, x):
+        x = torch.flatten(self.encoder(x), start_dim=1)
+        mu = self.fc_mu(x)
+        log_var = self.fc_var(x)
+        z = self.reparameterize(mu, log_var)
+        # print(z.shape)
+        x_hat = self.decoder(self.fc(z).view(x.shape[0], 128, 1, 1))
+        if self.pred_var:
+            var = F.softplus(self.fc_pred_var(z))
+            print(var[0, 0])
+        else:
+            var = None
+        return x_hat, mu, log_var, var
+
+            
+
+
 if __name__ == '__main__':
-    model = ResVAE(4, 128)
+    # model = ResVAE(4, 128, pred_var=8)
+    # print(model)
+    # x = torch.randn(2, 4, 32, 32)
+    # x_hat, mu, log_var, var = model(x)
+    # print(x_hat.shape, mu.shape, log_var.shape, var.shape)
+    # print(var.shape[1])
+
+    model = SimpleVAE(4, 128, pred_var=4)
     print(model)
     x = torch.randn(2, 4, 32, 32)
     x_hat, mu, log_var, var = model(x)
