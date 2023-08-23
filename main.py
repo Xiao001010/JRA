@@ -18,9 +18,9 @@ from torch.utils.data import DataLoader, random_split
 import matplotlib.pyplot as plt
 
 from utils import *
-from model import ResVAE
+from model import ResVAE, SimpleVAE
 from dataset import CellDataset, CellDataset_1st
-from criteria import LossVAE, LossRegression
+from criteria import LossVAE
 
 from train import train, test
 
@@ -135,10 +135,14 @@ if __name__ == '__main__':
 
     # Set model
     logger.info('Building model ...')
-    if predict_var and predict_bgvar:
+    if predict_var and predict_bgvar and config['use_bn'] != 'None':
         model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list'], pred_var=8).to(device)
-    elif predict_var and not predict_bgvar:
+    elif predict_var and predict_bgvar and config['use_bn'] == 'None':
+        model = SimpleVAE(config['in_channels'], config['latent_dim'], pred_var=8).to(device)
+    elif predict_var and not predict_bgvar and config['use_bn'] != 'None':
         model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list'], pred_var=4).to(device)
+    elif predict_var and not predict_bgvar and config['use_bn'] == 'None':
+        model = SimpleVAE(config['in_channels'], config['latent_dim'], pred_var=4).to(device)
     else:
         model = ResVAE(config['in_channels'], config['latent_dim'], config['use_bn'], config['dropout'], config['layer_list']).to(device)
     logger.info('Model: {}'.format(model))
