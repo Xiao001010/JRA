@@ -1,0 +1,35 @@
+task: 'SimpleVAE-latentdim_128-sigma_pred-bg_1.0'
+
+seed: 42
+
+log_dir: 'logs'
+ckpt_dir: 'checkpoints'
+
+data_path: 'data/single_cell_data_with_mask'
+only_1st: False
+batch_size: 256
+num_workers: 4
+shuffle: True
+mean: [6076.6860, 1350.9691, 5090.1455, 5019.9780]
+std: [5504.3955, 1145.6356,  663.3312,  706.0040]
+image_size: 32
+split_ratio: 0.8
+
+model: 'VAE'
+in_channels: 4
+latent_dim: 128
+use_bn: None
+dropout: None
+layer_list: None
+
+lr_scheduler: 'StepLR'
+lr: 0.03
+step_size: 25
+lr_decay: 0.8
+
+loss:
+  sigma: None
+  bg_var: 1.0
+
+epochs: 500
+save_interval: 10
